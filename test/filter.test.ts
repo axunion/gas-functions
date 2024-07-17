@@ -1,96 +1,65 @@
 import { describe, it, expect } from "vitest";
-import { filter, FilterParams } from "../src/filter";
+import { type SheetCell, type FilterParams, filter } from "../src/filter";
 
-describe("filter function", () => {
-  it("should filter and return the correct values based on filterColumnIndex and filterValue", () => {
+const testData: SheetCell[][] = [
+  ["Date", "Name", "Age", "Gender", "MemberType", "Event"],
+  ["2024/01/01", "Alice", 30, "Female", "Member", "Attended"],
+  ["2024/01/02", "Bob", 25, "Male", "Non-Member", "Not Attended"],
+  ["2024/01/03", "Charlie", 35, "Male", "Member", "Attended"],
+  ["2024/01/04", "Diana", 28, "Female", "Member", "Not Attended"],
+  ["2024/01/05", "Eve", 22, "Female", "Non-Member", "Attended"],
+];
+
+describe("filter function tests", () => {
+  it("should return rows where MemberType is Member", () => {
     const params: FilterParams = {
-      rows: [
-        ["Alice", "Engineer", 30],
-        ["Bob", "Designer", 25],
-        ["Charlie", "Engineer", 35],
-      ],
-      filterColumnIndex: 1,
-      filterValue: "Engineer",
-      targetColumnIndexes: [0, 2],
+      rows: testData,
+      filterHeader: "MemberType",
+      filterValue: "Member",
+      retrieveHeaders: ["Name", "Event"],
     };
 
-    const expected = [
-      ["Alice", 30],
-      ["Charlie", 35],
-    ];
-
     const result = filter(params);
-    expect(result).toEqual(expected);
+    expect(result).toEqual([
+      ["Alice", "Attended"],
+      ["Charlie", "Attended"],
+      ["Diana", "Not Attended"],
+    ]);
   });
 
-  it("should return an empty array if no matches are found", () => {
+  it("should return empty array when filterValue does not match any rows", () => {
     const params: FilterParams = {
-      rows: [
-        ["Alice", "Engineer", 30],
-        ["Bob", "Designer", 25],
-        ["Charlie", "Engineer", 35],
-      ],
-      filterColumnIndex: 1,
-      filterValue: "Manager",
-      targetColumnIndexes: [0, 2],
+      rows: testData,
+      filterHeader: "Name",
+      filterValue: "Zoe",
+      retrieveHeaders: ["Name", "Event"],
     };
 
-    const expected: unknown[][] = [];
-
     const result = filter(params);
-    expect(result).toEqual(expected);
+    expect(result).toEqual([]);
   });
 
-  it("should handle an empty data array", () => {
+  it("should return empty array when filterHeader is not found", () => {
     const params: FilterParams = {
-      rows: [],
-      filterColumnIndex: 1,
-      filterValue: "Engineer",
-      targetColumnIndexes: [0, 2],
+      rows: testData,
+      filterHeader: "NonExistentHeader",
+      filterValue: "Member",
+      retrieveHeaders: ["Name", "Event"],
     };
 
-    const expected: unknown[][] = [];
-
     const result = filter(params);
-    expect(result).toEqual(expected);
+    expect(result).toEqual([]);
   });
 
-  it("should handle targetColumnIndexes that are out of bounds", () => {
+  it("should return empty array when retrieveHeader is not found", () => {
     const params: FilterParams = {
-      rows: [
-        ["Alice", "Engineer", 30],
-        ["Bob", "Designer", 25],
-        ["Charlie", "Engineer", 35],
-      ],
-      filterColumnIndex: 1,
-      filterValue: "Engineer",
-      targetColumnIndexes: [0, 3],
+      rows: testData,
+      filterHeader: "MemberType",
+      filterValue: "Member",
+      retrieveHeaders: ["NonExistentHeader"],
     };
 
-    const expected = [
-      ["Alice", undefined],
-      ["Charlie", undefined],
-    ];
-
     const result = filter(params);
-    expect(result).toEqual(expected);
-  });
-
-  it("should handle filterColumnIndex that is out of bounds", () => {
-    const params: FilterParams = {
-      rows: [
-        ["Alice", "Engineer", 30],
-        ["Bob", "Designer", 25],
-        ["Charlie", "Engineer", 35],
-      ],
-      filterColumnIndex: 3,
-      filterValue: "Engineer",
-      targetColumnIndexes: [0, 2],
-    };
-
-    const expected: unknown[][] = [];
-
-    const result = filter(params);
-    expect(result).toEqual(expected);
+    expect(result).toEqual([]);
   });
 });
