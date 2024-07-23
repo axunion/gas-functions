@@ -14,8 +14,8 @@ describe("filter function tests", () => {
   it("should return rows where MemberType is Member", () => {
     const params: FilterParams = {
       rows: testData,
-      filterHeader: "MemberType",
-      filterValue: "Member",
+      headerName: "MemberType",
+      headerValue: "Member",
       retrieveHeaders: ["Name", "Event"],
     };
 
@@ -27,11 +27,11 @@ describe("filter function tests", () => {
     ]);
   });
 
-  it("should return empty array when filterValue does not match any rows", () => {
+  it("should return empty array when headerValue does not match any rows", () => {
     const params: FilterParams = {
       rows: testData,
-      filterHeader: "Name",
-      filterValue: "Zoe",
+      headerName: "Name",
+      headerValue: "Zoe",
       retrieveHeaders: ["Name", "Event"],
     };
 
@@ -39,11 +39,11 @@ describe("filter function tests", () => {
     expect(result).toEqual([]);
   });
 
-  it("should return empty array when filterHeader is not found", () => {
+  it("should return empty array when headerName is not found", () => {
     const params: FilterParams = {
       rows: testData,
-      filterHeader: "NonExistentHeader",
-      filterValue: "Member",
+      headerName: "NonExistentHeader",
+      headerValue: "Member",
       retrieveHeaders: ["Name", "Event"],
     };
 
@@ -54,8 +54,8 @@ describe("filter function tests", () => {
   it("should return empty array when retrieveHeader is not found", () => {
     const params: FilterParams = {
       rows: testData,
-      filterHeader: "MemberType",
-      filterValue: "Member",
+      headerName: "MemberType",
+      headerValue: "Member",
       retrieveHeaders: ["NonExistentHeader"],
     };
 

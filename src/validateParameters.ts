@@ -1,18 +1,18 @@
-type ConfigRow = {
+type AcceptedRow = {
   name: string;
   maxlength: number;
   required: boolean;
 };
 
-type CheckResult = {
+type ValidateResult = {
   values: string[];
   errors: string[];
 };
 
 function validateParameters(
   parameters: Record<string, string | string[]>,
-  acceptedRows: ConfigRow[]
-): CheckResult {
+  acceptedRows: AcceptedRow[]
+): ValidateResult {
   const values: string[] = [];
   const errors: string[] = [];
 
