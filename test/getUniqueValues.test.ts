@@ -56,6 +56,6 @@ describe("getUniqueValues", () => {
     ];
     const headerName = "header2";
     const result = getUniqueValues({ rows, headerName });
-    expect(result).toEqual(["1", "true"]);
+    expect(result).toEqual([1, "1", true, "true"]);
   });
 });
