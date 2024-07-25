@@ -1,61 +1,60 @@
 import { describe, it, expect } from "vitest";
-import { getUniqueValues, SheetCell } from "../src/getUniqueValues";
+import { type SheetCell, getUniqueValues } from "../src/getUniqueValues";
 
 describe("getUniqueValues", () => {
-  it("should return unique values for the given header", () => {
+  it("should return unique values from the specified column", () => {
     const rows: SheetCell[][] = [
-      ["header1", "header2", "header3"],
+      ["Header1", "Header2", "Header3"],
       [1, "a", true],
       [2, "b", false],
       [3, "a", true],
-      [4, "c", null],
     ];
-    const headerName = "header2";
-    const result = getUniqueValues({ rows, headerName });
-    expect(result).toEqual(["a", "b", "c"]);
+    const rowsWithoutHeader = rows.slice(1);
+    const result = getUniqueValues({ rows: rowsWithoutHeader, columnIndex: 1 });
+    expect(result).toEqual(["a", "b"]);
   });
 
-  it("should return an empty array if rows are empty", () => {
+  it("should handle empty rows", () => {
     const rows: SheetCell[][] = [];
-    const headerName = "header2";
-    const result = getUniqueValues({ rows, headerName });
+    const result = getUniqueValues({ rows, columnIndex: 1 });
     expect(result).toEqual([]);
   });
 
-  it("should return an empty array if header is not found", () => {
+  it("should handle columnIndex out of range", () => {
     const rows: SheetCell[][] = [
-      ["header1", "header2", "header3"],
+      ["Header1", "Header2", "Header3"],
       [1, "a", true],
       [2, "b", false],
     ];
-    const headerName = "nonexistent";
-    const result = getUniqueValues({ rows, headerName });
+    const rowsWithoutHeader = rows.slice(1);
+    const result = getUniqueValues({
+      rows: rowsWithoutHeader,
+      columnIndex: 10,
+    });
     expect(result).toEqual([]);
   });
 
-  it("should handle null and undefined values correctly", () => {
+  it("should exclude null and undefined values", () => {
     const rows: SheetCell[][] = [
-      ["header1", "header2", "header3"],
-      [1, "a", true],
-      [2, null, false],
-      [3, undefined, true],
-      [4, "a", null],
+      ["Header1", "Header2", "Header3"],
+      [1, "a", null],
+      [2, undefined, false],
+      [3, "a", true],
     ];
-    const headerName = "header2";
-    const result = getUniqueValues({ rows, headerName });
+    const rowsWithoutHeader = rows.slice(1);
+    const result = getUniqueValues({ rows: rowsWithoutHeader, columnIndex: 1 });
     expect(result).toEqual(["a"]);
   });
 
-  it("should return unique string representations for different data types", () => {
+  it("should handle boolean values correctly", () => {
     const rows: SheetCell[][] = [
-      ["header1", "header2", "header3"],
-      [1, 1, true],
-      [2, "1", false],
-      [3, true, true],
-      [4, "true", null],
+      ["Header1", "Header2", "Header3"],
+      [1, true, "x"],
+      [2, false, "y"],
+      [3, true, "z"],
     ];
-    const headerName = "header2";
-    const result = getUniqueValues({ rows, headerName });
-    expect(result).toEqual([1, "1", true, "true"]);
+    const rowsWithoutHeader = rows.slice(1);
+    const result = getUniqueValues({ rows: rowsWithoutHeader, columnIndex: 1 });
+    expect(result).toEqual([true, false]);
   });
 });

@@ -2,8 +2,8 @@ type SheetCell = number | string | boolean | Date | null | undefined;
 
 type GroupByParams = {
   rows: SheetCell[][];
-  groupByName: string;
-  retrieveNames: string[];
+  columnIndex: number;
+  retrieveIndexes: number[];
 };
 
 type GroupedValues = {
@@ -11,33 +11,28 @@ type GroupedValues = {
 };
 
 function groupBy(params: GroupByParams): GroupedValues {
-  const { rows, groupByName, retrieveNames } = params;
+  const { rows, columnIndex, retrieveIndexes } = params;
 
   if (rows.length === 0) {
     return {};
   }
 
-  const headers = rows[0];
-  const groupByIndex = headers.indexOf(groupByName);
-  const retrieveIndexes = retrieveNames.map((header) =>
-    headers.indexOf(header)
-  );
-
-  if (groupByIndex === -1) {
-    console.error(`"${groupByName}" not found`);
+  if (columnIndex < 0 || columnIndex >= rows[0].length) {
+    console.error(`Invalid column index: ${columnIndex}`);
     return {};
   }
 
-  if (retrieveIndexes.includes(-1)) {
-    console.error(`"${retrieveNames}" not found`);
-    return {};
+  for (const index of retrieveIndexes) {
+    if (index < 0 || index >= rows[0].length) {
+      console.error(`Invalid retrieve index: ${index}`);
+      return {};
+    }
   }
 
   const groupedValues: GroupedValues = {};
 
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
-    const groupKey = row[groupByIndex];
+  for (const row of rows) {
+    const groupKey = row[columnIndex];
     const values = retrieveIndexes.map((index) => row[index]);
 
     if (groupKey !== null && groupKey !== undefined) {

@@ -1,65 +1,80 @@
 import { describe, it, expect } from "vitest";
-import { type SheetCell, type FilterParams, filter } from "../src/filter";
+import { type SheetCell, filter } from "../src/filter";
 
-const testData: SheetCell[][] = [
-  ["Date", "Name", "Age", "Gender", "MemberType", "Event"],
-  ["2024/01/01", "Alice", 30, "Female", "Member", "Attended"],
-  ["2024/01/02", "Bob", 25, "Male", "Non-Member", "Not Attended"],
-  ["2024/01/03", "Charlie", 35, "Male", "Member", "Attended"],
-  ["2024/01/04", "Diana", 28, "Female", "Member", "Not Attended"],
-  ["2024/01/05", "Eve", 22, "Female", "Non-Member", "Attended"],
-];
-
-describe("filter function tests", () => {
-  it("should return rows where MemberType is Member", () => {
-    const params: FilterParams = {
-      rows: testData,
-      filterName: "MemberType",
-      filterValue: "Member",
-      retrieveNames: ["Name", "Event"],
-    };
-
-    const result = filter(params);
+describe("filter", () => {
+  it("should filter rows and retrieve specified columns", () => {
+    const rows: SheetCell[][] = [
+      [1, "a", true],
+      [2, "b", false],
+      [3, "a", true],
+      [4, "c", true],
+    ];
+    const result = filter({
+      rows,
+      columnIndex: 1,
+      filterValue: "a",
+      retrieveIndexes: [0, 2],
+    });
     expect(result).toEqual([
-      ["Alice", "Attended"],
-      ["Charlie", "Attended"],
-      ["Diana", "Not Attended"],
+      [1, true],
+      [3, true],
     ]);
   });
 
-  it("should return empty array when filterValue does not match any rows", () => {
-    const params: FilterParams = {
-      rows: testData,
-      filterName: "Name",
-      filterValue: "Zoe",
-      retrieveNames: ["Name", "Event"],
-    };
-
-    const result = filter(params);
+  it("should return empty array if rows are empty", () => {
+    const rows: SheetCell[][] = [];
+    const result = filter({
+      rows,
+      columnIndex: 1,
+      filterValue: "a",
+      retrieveIndexes: [0, 2],
+    });
     expect(result).toEqual([]);
   });
 
-  it("should return empty array when filterName is not found", () => {
-    const params: FilterParams = {
-      rows: testData,
-      filterName: "NonExistentHeader",
-      filterValue: "Member",
-      retrieveNames: ["Name", "Event"],
-    };
-
-    const result = filter(params);
+  it("should return empty array if columnIndex is out of range", () => {
+    const rows: SheetCell[][] = [
+      [1, "a", true],
+      [2, "b", false],
+    ];
+    const result = filter({
+      rows,
+      columnIndex: 5,
+      filterValue: "a",
+      retrieveIndexes: [0, 2],
+    });
     expect(result).toEqual([]);
   });
 
-  it("should return empty array when retrieveHeader is not found", () => {
-    const params: FilterParams = {
-      rows: testData,
-      filterName: "MemberType",
-      filterValue: "Member",
-      retrieveNames: ["NonExistentHeader"],
-    };
-
-    const result = filter(params);
+  it("should return empty array if any retrieveIndex is out of range", () => {
+    const rows: SheetCell[][] = [
+      [1, "a", true],
+      [2, "b", false],
+    ];
+    const result = filter({
+      rows,
+      columnIndex: 1,
+      filterValue: "a",
+      retrieveIndexes: [0, 5],
+    });
     expect(result).toEqual([]);
+  });
+
+  it("should handle null and undefined values correctly", () => {
+    const rows: SheetCell[][] = [
+      [1, "a", null],
+      [2, undefined, false],
+      [3, "a", true],
+    ];
+    const result = filter({
+      rows,
+      columnIndex: 1,
+      filterValue: "a",
+      retrieveIndexes: [0, 2],
+    });
+    expect(result).toEqual([
+      [1, null],
+      [3, true],
+    ]);
   });
 });

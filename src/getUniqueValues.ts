@@ -2,28 +2,24 @@ type SheetCell = number | string | boolean | Date | null | undefined;
 
 type GetUniqueValuesParams = {
   rows: SheetCell[][];
-  headerName: string;
+  columnIndex: number;
 };
 
 function getUniqueValues(params: GetUniqueValuesParams): SheetCell[] {
-  const { rows, headerName } = params;
+  const { rows, columnIndex } = params;
 
   if (rows.length === 0) {
     return [];
   }
 
-  const headerRow = rows[0];
-  const columnIndex = headerRow.indexOf(headerName);
-
-  if (columnIndex === -1) {
-    console.error(`"${headerName}" not found`);
+  if (columnIndex < 0 || columnIndex >= rows[0].length) {
+    console.error(`Invalid column index: ${columnIndex}`);
     return [];
   }
 
   const uniqueValues = new Set<SheetCell>();
 
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
+  for (const row of rows) {
     const cell = row[columnIndex];
 
     if (cell !== null && cell !== undefined) {

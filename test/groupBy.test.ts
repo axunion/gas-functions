@@ -1,93 +1,85 @@
 import { describe, it, expect } from "vitest";
-import { groupBy, SheetCell, GroupByParams } from "../src/groupBy";
+import { type SheetCell, groupBy } from "../src/groupBy";
 
 describe("groupBy", () => {
-  it("should group values by the given header and retrieve specified values", () => {
+  it("should group rows by specified column and retrieve specified columns", () => {
     const rows: SheetCell[][] = [
-      ["id", "group", "value1", "value2"],
-      [1, "A", 10, 100],
-      [2, "B", 20, 200],
-      [3, "A", 30, 300],
-      [4, "B", 40, 400],
-      [5, "C", 50, 500],
+      [1, "A", 10],
+      [2, "B", 20],
+      [3, "A", 30],
+      [4, "B", 40],
+      [5, "C", 50],
     ];
-    const params: GroupByParams = {
+    const result = groupBy({
       rows,
-      groupByName: "group",
-      retrieveNames: ["value1", "value2"],
-    };
-    const result = groupBy(params);
+      columnIndex: 1,
+      retrieveIndexes: [0, 2],
+    });
     expect(result).toEqual({
       A: [
-        [10, 100],
-        [30, 300],
+        [1, 10],
+        [3, 30],
       ],
       B: [
-        [20, 200],
-        [40, 400],
+        [2, 20],
+        [4, 40],
       ],
-      C: [[50, 500]],
+      C: [[5, 50]],
     });
   });
 
   it("should return an empty object if rows are empty", () => {
     const rows: SheetCell[][] = [];
-    const params: GroupByParams = {
+    const result = groupBy({
       rows,
-      groupByName: "group",
-      retrieveNames: ["value1"],
-    };
-    const result = groupBy(params);
+      columnIndex: 1,
+      retrieveIndexes: [0, 2],
+    });
     expect(result).toEqual({});
   });
 
-  it("should return an empty object if groupByName is not found", () => {
+  it("should return an empty object if columnIndex is out of range", () => {
     const rows: SheetCell[][] = [
-      ["id", "group", "value"],
       [1, "A", 10],
       [2, "B", 20],
     ];
-    const params: GroupByParams = {
+    const result = groupBy({
       rows,
-      groupByName: "nonexistent",
-      retrieveNames: ["value"],
-    };
-    const result = groupBy(params);
+      columnIndex: 5,
+      retrieveIndexes: [0, 2],
+    });
     expect(result).toEqual({});
   });
 
-  it("should return an empty object if any retrieveNames are not found", () => {
+  it("should return an empty object if any retrieveIndex is out of range", () => {
     const rows: SheetCell[][] = [
-      ["id", "group", "value"],
       [1, "A", 10],
       [2, "B", 20],
     ];
-    const params: GroupByParams = {
+    const result = groupBy({
       rows,
-      groupByName: "group",
-      retrieveNames: ["nonexistent"],
-    };
-    const result = groupBy(params);
+      columnIndex: 1,
+      retrieveIndexes: [0, 5],
+    });
     expect(result).toEqual({});
   });
 
   it("should handle null and undefined values correctly", () => {
     const rows: SheetCell[][] = [
-      ["id", "group", "value"],
-      [1, "A", 10],
-      [2, "A", null],
-      [3, "A", undefined],
-      [4, "B", 20],
+      [1, "A", null],
+      [2, undefined, 20],
+      [3, "A", 30],
     ];
-    const params: GroupByParams = {
+    const result = groupBy({
       rows,
-      groupByName: "group",
-      retrieveNames: ["value"],
-    };
-    const result = groupBy(params);
+      columnIndex: 1,
+      retrieveIndexes: [0, 2],
+    });
     expect(result).toEqual({
-      A: [[10], [null], [undefined]],
-      B: [[20]],
+      A: [
+        [1, null],
+        [3, 30],
+      ],
     });
   });
 });
