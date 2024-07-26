@@ -49,4 +49,4 @@ function groupBy(params: GroupByParams): GroupedValues {
   return groupedValues;
 }
 
-export { SheetCell, GroupByParams, GroupedValues, groupBy };
+export { groupBy };

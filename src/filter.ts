@@ -31,4 +31,4 @@ function filter(params: FilterParams): SheetCell[][] {
     .map((row) => retrieveIndexes.map((index) => row[index]));
 }
 
-export { SheetCell, FilterParams, filter };
+export { filter };

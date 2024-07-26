@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { type SheetCell, getUniqueValues } from "../src/getUniqueValues";
+import { getUniqueValues } from "../src/getUniqueValues";
 
 describe("getUniqueValues", () => {
   it("should return unique values from the specified column", () => {
-    const rows: SheetCell[][] = [
+    const rows = [
       ["Header1", "Header2", "Header3"],
       [1, "a", true],
       [2, "b", false],
@@ -15,13 +15,13 @@ describe("getUniqueValues", () => {
   });
 
   it("should handle empty rows", () => {
-    const rows: SheetCell[][] = [];
+    const rows = [];
     const result = getUniqueValues({ rows, columnIndex: 1 });
     expect(result).toEqual([]);
   });
 
   it("should handle columnIndex out of range", () => {
-    const rows: SheetCell[][] = [
+    const rows = [
       ["Header1", "Header2", "Header3"],
       [1, "a", true],
       [2, "b", false],
@@ -35,7 +35,7 @@ describe("getUniqueValues", () => {
   });
 
   it("should exclude null and undefined values", () => {
-    const rows: SheetCell[][] = [
+    const rows = [
       ["Header1", "Header2", "Header3"],
       [1, "a", null],
       [2, undefined, false],
@@ -47,7 +47,7 @@ describe("getUniqueValues", () => {
   });
 
   it("should handle boolean values correctly", () => {
-    const rows: SheetCell[][] = [
+    const rows = [
       ["Header1", "Header2", "Header3"],
       [1, true, "x"],
       [2, false, "y"],

@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { type SheetCell, filter } from "../src/filter";
+import { filter } from "../src/filter";
 
 describe("filter", () => {
   it("should filter rows and retrieve specified columns", () => {
-    const rows: SheetCell[][] = [
+    const rows = [
       [1, "a", true],
       [2, "b", false],
       [3, "a", true],
@@ -22,7 +22,7 @@ describe("filter", () => {
   });
 
   it("should return empty array if rows are empty", () => {
-    const rows: SheetCell[][] = [];
+    const rows = [];
     const result = filter({
       rows,
       columnIndex: 1,
@@ -33,7 +33,7 @@ describe("filter", () => {
   });
 
   it("should return empty array if columnIndex is out of range", () => {
-    const rows: SheetCell[][] = [
+    const rows = [
       [1, "a", true],
       [2, "b", false],
     ];
@@ -47,7 +47,7 @@ describe("filter", () => {
   });
 
   it("should return empty array if any retrieveIndex is out of range", () => {
-    const rows: SheetCell[][] = [
+    const rows = [
       [1, "a", true],
       [2, "b", false],
     ];
@@ -61,7 +61,7 @@ describe("filter", () => {
   });
 
   it("should handle null and undefined values correctly", () => {
-    const rows: SheetCell[][] = [
+    const rows = [
       [1, "a", null],
       [2, undefined, false],
       [3, "a", true],

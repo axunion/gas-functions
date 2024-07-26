@@ -30,4 +30,4 @@ function getUniqueValues(params: GetUniqueValuesParams): SheetCell[] {
   return Array.from(uniqueValues);
 }
 
-export { SheetCell, getUniqueValues };
+export { getUniqueValues };
