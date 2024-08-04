@@ -5,7 +5,7 @@ function formatEmailTemplate(template: string, data: EmaiTemplateData): string {
 
   return template.replace(placeholderRegex, (match, key) => {
     key = key.trim();
-    return data.hasOwnProperty(key) ? String(data[key]) : match;
+    return data[key] ? String(data[key]) : match;
   });
 }
 
