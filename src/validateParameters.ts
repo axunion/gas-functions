@@ -11,7 +11,7 @@ type ValidateResult = {
 
 function validateParameters(
   parameters: Record<string, string | string[]>,
-  acceptedRows: AcceptedRow[]
+  acceptedRows: AcceptedRow[],
 ): ValidateResult {
   const values: string[] = [];
   const errors: string[] = [];

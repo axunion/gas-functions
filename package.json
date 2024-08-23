@@ -3,11 +3,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "format": "prettier --write \"**/*.+(html|css|js|json|yml|yaml|ts)\"",
-    "format:check": "prettier --check \"**/*.+(html|css|js|json|yml|yaml|ts)\"",
-    "lint": "eslint --ext .js,.ts src/",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "validate": "npm run format:check && npm run lint",
-    "test": "vitest"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
