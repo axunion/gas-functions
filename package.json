@@ -3,23 +3,20 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "validate": "npm run format:check && npm run lint",
+    "format": "biome format ./src",
+    "format:write": "biome format --write ./src",
+    "lint": "biome lint ./src",
+    "lint:write": "biome lint --write ./src",
+    "check": "biome check ./src",
+    "check:write": "biome check --write ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@eslint/js": "^9.8.0",
+    "@biomejs/biome": "1.9.4",
     "@types/google-apps-script": "^1.0.83",
-    "eslint": "^9.8.0",
-    "globals": "^15.9.0",
-    "prettier": "3.3.3",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0",
     "vitest": "^2.0.3"
   }
 }
