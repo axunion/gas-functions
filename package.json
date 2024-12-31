@@ -1,22 +1,22 @@
 {
-  "name": "gas-functions",
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "format": "biome format ./src",
-    "format:write": "biome format --write ./src",
-    "lint": "biome lint ./src",
-    "lint:write": "biome lint --write ./src",
-    "check": "biome check ./src",
-    "check:write": "biome check --write ./src",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@types/google-apps-script": "^1.0.83",
-    "typescript": "^5.5.4",
-    "vitest": "^2.0.3"
-  }
+	"name": "gas-functions",
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"format": "biome format ./src",
+		"format:write": "biome format --write ./src",
+		"lint": "biome lint ./src",
+		"lint:write": "biome lint --write ./src",
+		"check": "biome check ./src",
+		"check:write": "biome check --write ./src",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "",
+	"license": "MIT",
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/google-apps-script": "^1.0.83",
+		"typescript": "^5.5.4",
+		"vitest": "^2.0.3"
+	}
 }
