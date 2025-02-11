@@ -1,10 +1,14 @@
-type EmaiTemplateData = { [key: string]: string | number };
+type EmailTemplateData = { [key: string]: string | number };
 
-function formatEmailTemplate(template: string, data: EmaiTemplateData): string {
-	const placeholderRegex = /\{\{(.*?)\}\}/g;
+function formatEmailTemplate(
+	template: string,
+	data: EmailTemplateData,
+): string {
+	const placeholderRegex = /\{\{(.+?)\}\}/g;
 
 	return template.replace(placeholderRegex, (match, key) => {
-		return data[key] ? String(data[key]) : match;
+		const trimmedKey = key.trim();
+		return trimmedKey in data ? String(data[trimmedKey]) : match;
 	});
 }
 

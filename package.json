@@ -9,7 +9,7 @@
 		"lint:write": "biome lint --write ./src",
 		"check": "biome check ./src",
 		"check:write": "biome check --write ./src",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "vitest"
 	},
 	"author": "",
 	"license": "MIT",
