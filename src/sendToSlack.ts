@@ -33,5 +33,3 @@ function sendToSlack(
 		throw `Failed to send message to Slack: ${error.message}`;
 	}
 }
-
-export { sendToSlack };
