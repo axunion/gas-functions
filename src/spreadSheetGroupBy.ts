@@ -4,7 +4,7 @@ type GroupedValues = {
 	[key: string]: SheetCell[][];
 };
 
-function groupBy(params: {
+function spreadSheetGroupBy(params: {
 	rows: SheetCell[][];
 	columnIndex: number;
 	retrieveIndexes: number[];
@@ -47,4 +47,4 @@ function groupBy(params: {
 	return groupedValues;
 }
 
-export { groupBy };
+export { spreadSheetGroupBy };

@@ -1,6 +1,6 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
-function getUniqueValues(params: {
+function spreadSheetGetUniqueValues(params: {
 	rows: SheetCell[][];
 	columnIndex: number;
 }): SheetCell[] {
@@ -28,4 +28,4 @@ function getUniqueValues(params: {
 	return Array.from(uniqueValues);
 }
 
-export { getUniqueValues };
+export { spreadSheetGetUniqueValues };

@@ -1,4 +1,4 @@
-function getIndexes(row: string[], names: string[]): number[] {
+function spreadSheetGetIndexes(row: string[], names: string[]): number[] {
 	return names.map((name) => {
 		const index = row.indexOf(name);
 
@@ -10,4 +10,4 @@ function getIndexes(row: string[], names: string[]): number[] {
 	});
 }
 
-export { getIndexes };
+export { spreadSheetGetIndexes };

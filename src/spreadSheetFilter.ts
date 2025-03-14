@@ -1,6 +1,6 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
-function filter(params: {
+function spreadSheetFilter(params: {
 	rows: SheetCell[][];
 	columnIndex: number;
 	filterValue: SheetCell;
@@ -29,4 +29,4 @@ function filter(params: {
 		.map((row) => retrieveIndexes.map((index) => row[index]));
 }
 
-export { filter };
+export { spreadSheetFilter };
