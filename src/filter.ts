@@ -1,13 +1,11 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
-type FilterParams = {
+function filter(params: {
 	rows: SheetCell[][];
 	columnIndex: number;
 	filterValue: SheetCell;
 	retrieveIndexes: number[];
-};
-
-function filter(params: FilterParams): SheetCell[][] {
+}): SheetCell[][] {
 	const { rows, columnIndex, filterValue, retrieveIndexes } = params;
 
 	if (rows.length === 0) {

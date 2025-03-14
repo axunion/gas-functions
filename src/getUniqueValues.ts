@@ -1,11 +1,9 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
-type GetUniqueValuesParams = {
+function getUniqueValues(params: {
 	rows: SheetCell[][];
 	columnIndex: number;
-};
-
-function getUniqueValues(params: GetUniqueValuesParams): SheetCell[] {
+}): SheetCell[] {
 	const { rows, columnIndex } = params;
 
 	if (rows.length === 0) {

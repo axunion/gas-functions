@@ -1,16 +1,14 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
-type GroupByParams = {
-	rows: SheetCell[][];
-	columnIndex: number;
-	retrieveIndexes: number[];
-};
-
 type GroupedValues = {
 	[key: string]: SheetCell[][];
 };
 
-function groupBy(params: GroupByParams): GroupedValues {
+function groupBy(params: {
+	rows: SheetCell[][];
+	columnIndex: number;
+	retrieveIndexes: number[];
+}): GroupedValues {
 	const { rows, columnIndex, retrieveIndexes } = params;
 
 	if (rows.length === 0) {

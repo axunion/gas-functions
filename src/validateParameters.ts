@@ -1,3 +1,5 @@
+type InputValues = Record<string, string | string[]>;
+
 type AcceptedRow = {
 	name: string;
 	maxlength: number;
@@ -10,14 +12,14 @@ type ValidateResult = {
 };
 
 function validateParameters(
-	parameters: Record<string, string | string[]>,
+	inputValues: InputValues,
 	acceptedRows: AcceptedRow[],
 ): ValidateResult {
 	const values: string[] = [];
 	const errors: string[] = [];
 
 	for (const { name, maxlength, required } of acceptedRows) {
-		const value = parameters[name];
+		const value = inputValues[name];
 
 		if (typeof value === "string") {
 			if (required && value === "") {

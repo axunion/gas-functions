@@ -1,12 +1,8 @@
-type SendToSlackParams = {
+function sendToSlack(params: {
 	token: string;
 	channel: string;
 	text: string;
-};
-
-function sendToSlack(
-	params: SendToSlackParams,
-): GoogleAppsScript.URL_Fetch.HTTPResponse {
+}): GoogleAppsScript.URL_Fetch.HTTPResponse {
 	const API = "https://slack.com/api/chat.postMessage";
 	const options: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
 		method: "post",

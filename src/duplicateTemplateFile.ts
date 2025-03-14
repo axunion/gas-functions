@@ -1,5 +1,5 @@
 type DuplicateTemplateFileParams = {
-	spreadsheetId: string;
+	fileId: string;
 	directoryId: string;
 	name: string;
 };
@@ -7,8 +7,8 @@ type DuplicateTemplateFileParams = {
 function duplicateTemplateFile(
 	params: DuplicateTemplateFileParams,
 ): GoogleAppsScript.Drive.File {
-	const { spreadsheetId, directoryId, name } = params;
-	const templateFile = DriveApp.getFileById(spreadsheetId);
+	const { fileId, directoryId, name } = params;
+	const templateFile = DriveApp.getFileById(fileId);
 	const targetFolder = DriveApp.getFolderById(directoryId);
 	const copiedFile = templateFile.makeCopy(name, targetFolder);
 
