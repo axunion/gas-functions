@@ -4,6 +4,9 @@ type GroupedValues = {
 	[key: string]: SheetCell[][];
 };
 
+/**
+ * Groups spreadsheet rows by a specified column value and retrieves cells at given indexes.
+ */
 function spreadSheetGroupBy(params: {
 	rows: SheetCell[][];
 	columnIndex: number;

@@ -1,5 +1,9 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
+/**
+ * Filters rows in a spreadsheet by matching a value in a specified column,
+ * then returns only the cells at the specified indexes.
+ */
 function spreadSheetFilter(params: {
 	rows: SheetCell[][];
 	columnIndex: number;

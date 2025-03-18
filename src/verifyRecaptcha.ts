@@ -7,6 +7,9 @@ type RecaptchaResponse = {
 	"error-codes"?: string[];
 };
 
+/**
+ * Verifies the reCAPTCHA response using Google's reCAPTCHA API.
+ */
 function verifyRecaptcha(secret: string, recaptcha: string): RecaptchaResponse {
 	const url = "https://www.google.com/recaptcha/api/siteverify";
 	const response = UrlFetchApp.fetch(url, {

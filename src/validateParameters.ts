@@ -11,6 +11,11 @@ type ValidateResult = {
 	errors: string[];
 };
 
+/**
+ * Validates input parameters against accepted criteria.
+ * Checks each field for required status and maximum length. For array values, it ensures all elements are strings and joins them.
+ * Returns an object with valid values and any error messages.
+ */
 function validateParameters(
 	inputValues: InputValues,
 	acceptedRows: AcceptedRow[],

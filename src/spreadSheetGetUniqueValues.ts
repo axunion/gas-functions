@@ -1,5 +1,8 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
+/**
+ * Returns unique, non-null values from a specified column in the spreadsheet rows.
+ */
 function spreadSheetGetUniqueValues(params: {
 	rows: SheetCell[][];
 	columnIndex: number;

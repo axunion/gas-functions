@@ -1,3 +1,6 @@
+/**
+ * Sends a message to a Slack channel using the Slack API.
+ */
 function sendToSlack(params: {
 	token: string;
 	channel: string;

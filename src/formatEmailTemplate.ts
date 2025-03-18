@@ -1,8 +1,10 @@
-type EmailTemplateData = { [key: string]: string | number };
-
+/**
+ * Replaces placeholders in the template with corresponding values from the data object.
+ * Placeholders should be in the format {{ key }}.
+ */
 function formatEmailTemplate(
 	template: string,
-	data: EmailTemplateData,
+	data: { [key: string]: string | number },
 ): string {
 	const placeholderRegex = /\{\{(.+?)\}\}/g;
 
