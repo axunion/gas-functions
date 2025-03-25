@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { spreadSheetFilter } from "../src/spreadSheetFilter";
+import { filter } from "../src/filter";
 
-describe("spreadSheetFilter", () => {
+describe("filter", () => {
 	it("should filter rows and retrieve specified columns", () => {
 		const rows = [
 			[1, "a", true],
@@ -9,7 +9,7 @@ describe("spreadSheetFilter", () => {
 			[3, "a", true],
 			[4, "c", true],
 		];
-		const result = spreadSheetFilter({
+		const result = filter({
 			rows,
 			columnIndex: 1,
 			filterValue: "a",
@@ -23,7 +23,7 @@ describe("spreadSheetFilter", () => {
 
 	it("should return empty array if rows are empty", () => {
 		const rows = [];
-		const result = spreadSheetFilter({
+		const result = filter({
 			rows,
 			columnIndex: 1,
 			filterValue: "a",
@@ -37,7 +37,7 @@ describe("spreadSheetFilter", () => {
 			[1, "a", true],
 			[2, "b", false],
 		];
-		const result = spreadSheetFilter({
+		const result = filter({
 			rows,
 			columnIndex: 5,
 			filterValue: "a",
@@ -51,7 +51,7 @@ describe("spreadSheetFilter", () => {
 			[1, "a", true],
 			[2, "b", false],
 		];
-		const result = spreadSheetFilter({
+		const result = filter({
 			rows,
 			columnIndex: 1,
 			filterValue: "a",
@@ -66,7 +66,7 @@ describe("spreadSheetFilter", () => {
 			[2, undefined, false],
 			[3, "a", true],
 		];
-		const result = spreadSheetFilter({
+		const result = filter({
 			rows,
 			columnIndex: 1,
 			filterValue: "a",

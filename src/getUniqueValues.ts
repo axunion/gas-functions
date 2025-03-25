@@ -1,9 +1,9 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
 /**
- * Returns unique, non-null values from a specified column in the spreadsheet rows.
+ * Returns unique, non-null values from a specified column.
  */
-function spreadSheetGetUniqueValues(params: {
+function getUniqueValues(params: {
 	rows: SheetCell[][];
 	columnIndex: number;
 }): SheetCell[] {
@@ -31,4 +31,4 @@ function spreadSheetGetUniqueValues(params: {
 	return Array.from(uniqueValues);
 }
 
-export { spreadSheetGetUniqueValues };
+export { getUniqueValues };

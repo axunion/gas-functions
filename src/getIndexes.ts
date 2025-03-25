@@ -1,8 +1,8 @@
 /**
- * Returns the indexes of specified names from a spreadsheet row.
+ * Returns the indexes of specified names.
  * Logs an error if a name is not found.
  */
-function spreadSheetGetIndexes(row: string[], names: string[]): number[] {
+function getIndexes(row: string[], names: string[]): number[] {
 	return names.map((name) => {
 		const index = row.indexOf(name);
 
@@ -14,4 +14,4 @@ function spreadSheetGetIndexes(row: string[], names: string[]): number[] {
 	});
 }
 
-export { spreadSheetGetIndexes };
+export { getIndexes };

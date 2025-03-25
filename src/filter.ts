@@ -1,10 +1,10 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
 /**
- * Filters rows in a spreadsheet by matching a value in a specified column,
+ * Filters rows by matching a value in a specified column,
  * then returns only the cells at the specified indexes.
  */
-function spreadSheetFilter(params: {
+function filter(params: {
 	rows: SheetCell[][];
 	columnIndex: number;
 	filterValue: SheetCell;
@@ -33,4 +33,4 @@ function spreadSheetFilter(params: {
 		.map((row) => retrieveIndexes.map((index) => row[index]));
 }
 
-export { spreadSheetFilter };
+export { filter };

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { spreadSheetGroupBy } from "../src/spreadSheetGroupBy";
+import { groupBy } from "../src/groupBy";
 
-describe("spreadSheetGroupBy", () => {
+describe("groupBy", () => {
 	it("should group rows by specified column and retrieve specified columns", () => {
 		const rows = [
 			[1, "A", 10],
@@ -10,7 +10,7 @@ describe("spreadSheetGroupBy", () => {
 			[4, "B", 40],
 			[5, "C", 50],
 		];
-		const result = spreadSheetGroupBy({
+		const result = groupBy({
 			rows,
 			columnIndex: 1,
 			retrieveIndexes: [0, 2],
@@ -30,7 +30,7 @@ describe("spreadSheetGroupBy", () => {
 
 	it("should return an empty object if rows are empty", () => {
 		const rows = [];
-		const result = spreadSheetGroupBy({
+		const result = groupBy({
 			rows,
 			columnIndex: 1,
 			retrieveIndexes: [0, 2],
@@ -43,7 +43,7 @@ describe("spreadSheetGroupBy", () => {
 			[1, "A", 10],
 			[2, "B", 20],
 		];
-		const result = spreadSheetGroupBy({
+		const result = groupBy({
 			rows,
 			columnIndex: 5,
 			retrieveIndexes: [0, 2],
@@ -56,7 +56,7 @@ describe("spreadSheetGroupBy", () => {
 			[1, "A", 10],
 			[2, "B", 20],
 		];
-		const result = spreadSheetGroupBy({
+		const result = groupBy({
 			rows,
 			columnIndex: 1,
 			retrieveIndexes: [0, 5],
@@ -70,7 +70,7 @@ describe("spreadSheetGroupBy", () => {
 			[2, undefined, 20],
 			[3, "A", 30],
 		];
-		const result = spreadSheetGroupBy({
+		const result = groupBy({
 			rows,
 			columnIndex: 1,
 			retrieveIndexes: [0, 2],

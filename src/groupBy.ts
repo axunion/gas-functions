@@ -7,7 +7,7 @@ type GroupedValues = {
 /**
  * Groups spreadsheet rows by a specified column value and retrieves cells at given indexes.
  */
-function spreadSheetGroupBy(params: {
+function groupBy(params: {
 	rows: SheetCell[][];
 	columnIndex: number;
 	retrieveIndexes: number[];
@@ -50,4 +50,4 @@ function spreadSheetGroupBy(params: {
 	return groupedValues;
 }
 
-export { spreadSheetGroupBy };
+export { groupBy };

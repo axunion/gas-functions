@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { spreadSheetGetUniqueValues } from "../src/spreadSheetGetUniqueValues";
+import { getUniqueValues } from "../src/getUniqueValues";
 
-describe("spreadSheetGetUniqueValues", () => {
+describe("getUniqueValues", () => {
 	it("should return unique values from the specified column", () => {
 		const rows = [
 			["Header1", "Header2", "Header3"],
@@ -10,7 +10,7 @@ describe("spreadSheetGetUniqueValues", () => {
 			[3, "a", true],
 		];
 		const rowsWithoutHeader = rows.slice(1);
-		const result = spreadSheetGetUniqueValues({
+		const result = getUniqueValues({
 			rows: rowsWithoutHeader,
 			columnIndex: 1,
 		});
@@ -19,7 +19,7 @@ describe("spreadSheetGetUniqueValues", () => {
 
 	it("should handle empty rows", () => {
 		const rows = [];
-		const result = spreadSheetGetUniqueValues({ rows, columnIndex: 1 });
+		const result = getUniqueValues({ rows, columnIndex: 1 });
 		expect(result).toEqual([]);
 	});
 
@@ -30,7 +30,7 @@ describe("spreadSheetGetUniqueValues", () => {
 			[2, "b", false],
 		];
 		const rowsWithoutHeader = rows.slice(1);
-		const result = spreadSheetGetUniqueValues({
+		const result = getUniqueValues({
 			rows: rowsWithoutHeader,
 			columnIndex: 10,
 		});
@@ -45,7 +45,7 @@ describe("spreadSheetGetUniqueValues", () => {
 			[3, "a", true],
 		];
 		const rowsWithoutHeader = rows.slice(1);
-		const result = spreadSheetGetUniqueValues({
+		const result = getUniqueValues({
 			rows: rowsWithoutHeader,
 			columnIndex: 1,
 		});
@@ -60,7 +60,7 @@ describe("spreadSheetGetUniqueValues", () => {
 			[3, true, "z"],
 		];
 		const rowsWithoutHeader = rows.slice(1);
-		const result = spreadSheetGetUniqueValues({
+		const result = getUniqueValues({
 			rows: rowsWithoutHeader,
 			columnIndex: 1,
 		});
