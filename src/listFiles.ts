@@ -2,17 +2,24 @@
  * Returns an array of pairs [fileName, lastUpdated] for all files in the specified folder,
  * sorted by the given key and order.
  *
- * @param {string} folderId - The ID of the Google Drive folder.
- * @param {"name" | "date"} [sortKey="name"] - The key to sort by: 'name' for file name or 'date' for updated date.
- * @param {"asc" | "desc"} [sortOrder="asc"] - The order to sort: 'asc' for ascending or 'desc' for descending.
+ * This custom function retrieves all files from a Google Drive folder (using folderId)
+ * and returns an array of pairs where each pair consists of the file name and its last updated date.
+ * The result is sorted by either file name or updated date, in ascending or descending order.
+ *
+ * @param {object} params - Parameters for listing files.
+ * @param {string} params.folderId - The ID of the Google Drive folder.
+ * @param {"name" | "date"} [params.sortKey="name"] - The key to sort by: 'name' for file name or 'date' for updated date.
+ * @param {"asc" | "desc"} [params.sortOrder="asc"] - The order to sort: 'asc' for ascending or 'desc' for descending.
  * @returns {Array<[string, GoogleAppsScript.Base.Date]>} An array of pairs where each pair contains the file name and the last updated date.
  * @customfunction
  */
-function listFiles(
-	folderId: string,
-	sortKey: "name" | "date" = "name",
-	sortOrder: "asc" | "desc" = "asc",
-): Array<[string, GoogleAppsScript.Base.Date]> {
+function listFiles(params: {
+	folderId: string;
+	sortKey: "name" | "date";
+	sortOrder: "asc" | "desc";
+}): Array<[string, GoogleAppsScript.Base.Date]> {
+	const { folderId, sortKey = "name", sortOrder = "asc" } = params;
+
 	if (!folderId) {
 		throw new Error("Folder ID is required.");
 	}

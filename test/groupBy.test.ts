@@ -38,30 +38,32 @@ describe("groupBy", () => {
 		expect(result).toEqual({});
 	});
 
-	it("should return an empty object if columnIndex is out of range", () => {
+	it("should throw error if columnIndex is out of range", () => {
 		const rows = [
 			[1, "A", 10],
 			[2, "B", 20],
 		];
-		const result = groupBy({
-			rows,
-			columnIndex: 5,
-			retrieveIndexes: [0, 2],
-		});
-		expect(result).toEqual({});
+		expect(() =>
+			groupBy({
+				rows,
+				columnIndex: 5,
+				retrieveIndexes: [0, 2],
+			}),
+		).toThrow("Invalid column index: 5");
 	});
 
-	it("should return an empty object if any retrieveIndex is out of range", () => {
+	it("should throw error if any retrieveIndex is out of range", () => {
 		const rows = [
 			[1, "A", 10],
 			[2, "B", 20],
 		];
-		const result = groupBy({
-			rows,
-			columnIndex: 1,
-			retrieveIndexes: [0, 5],
-		});
-		expect(result).toEqual({});
+		expect(() =>
+			groupBy({
+				rows,
+				columnIndex: 1,
+				retrieveIndexes: [0, 5],
+			}),
+		).toThrow("Invalid retrieve index: 5");
 	});
 
 	it("should handle null and undefined values correctly", () => {

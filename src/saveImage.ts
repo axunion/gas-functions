@@ -1,15 +1,13 @@
 /**
  * Saves an image to a specified Google Drive directory.
  */
-function saveImage({
-	image,
-	fileName,
-	folderId,
-}: {
+function saveImage(params: {
 	image: GoogleAppsScript.Base.BlobSource;
 	fileName: string;
 	folderId: string;
 }): GoogleAppsScript.Drive.File {
+	const { image, fileName, folderId } = params;
+
 	// Attempt to retrieve the folder using the provided directory ID.
 	let folder: GoogleAppsScript.Drive.Folder;
 
@@ -30,3 +28,5 @@ function saveImage({
 
 	return file;
 }
+
+export { saveImage };

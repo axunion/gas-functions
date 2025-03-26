@@ -29,6 +29,9 @@ function sendToSlack(params: {
 
 		return response;
 	} catch (error) {
-		throw `Failed to send message to Slack: ${error.message}`;
+		const errorMessage = error instanceof Error ? error.message : error;
+		throw new Error(`Failed to send message to Slack: ${errorMessage}`);
 	}
 }
+
+export { sendToSlack };

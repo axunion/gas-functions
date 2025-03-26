@@ -7,8 +7,34 @@ function duplicateFile(params: {
 	name: string;
 }): GoogleAppsScript.Drive.File {
 	const { fileId, directoryId, name } = params;
-	const templateFile = DriveApp.getFileById(fileId);
-	const targetFolder = DriveApp.getFolderById(directoryId);
-	const copiedFile = templateFile.makeCopy(name, targetFolder);
+
+	let templateFile: GoogleAppsScript.Drive.File;
+
+	try {
+		templateFile = DriveApp.getFileById(fileId);
+	} catch (error) {
+		throw new Error(`Failed to retrieve file with id "${fileId}": ${error}`);
+	}
+
+	let targetFolder: GoogleAppsScript.Drive.Folder;
+
+	try {
+		targetFolder = DriveApp.getFolderById(directoryId);
+	} catch (error) {
+		throw new Error(
+			`Failed to retrieve folder with id "${directoryId}": ${error}`,
+		);
+	}
+
+	let copiedFile: GoogleAppsScript.Drive.File;
+
+	try {
+		copiedFile = templateFile.makeCopy(name, targetFolder);
+	} catch (error) {
+		throw new Error(`Failed to duplicate file: ${error}`);
+	}
+
 	return copiedFile;
 }
+
+export { duplicateFile };

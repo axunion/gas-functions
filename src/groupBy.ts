@@ -6,6 +6,7 @@ type GroupedValues = {
 
 /**
  * Groups spreadsheet rows by a specified column value and retrieves cells at given indexes.
+ * Rows with null or undefined group key are ignored.
  */
 function groupBy(params: {
 	rows: SheetCell[][];
@@ -18,21 +19,22 @@ function groupBy(params: {
 		return {};
 	}
 
-	if (columnIndex < 0 || columnIndex >= rows[0].length) {
-		console.error(`Invalid column index: ${columnIndex}`);
-		return {};
+	const rowLength = rows[0].length;
+
+	if (columnIndex < 0 || columnIndex >= rowLength) {
+		throw new Error(`Invalid column index: ${columnIndex}`);
 	}
 
 	for (const index of retrieveIndexes) {
-		if (index < 0 || index >= rows[0].length) {
-			console.error(`Invalid retrieve index: ${index}`);
-			return {};
+		if (index < 0 || index >= rowLength) {
+			throw new Error(`Invalid retrieve index: ${index}`);
 		}
 	}
 
 	const groupedValues: GroupedValues = {};
 
 	for (const row of rows) {
+		// Optionally, you might check if row.length === rowLength for consistency.
 		const groupKey = row[columnIndex];
 		const values = retrieveIndexes.map((index) => row[index]);
 

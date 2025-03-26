@@ -1,13 +1,22 @@
 /**
  * Returns the indexes of specified names.
- * Logs an error if a name is not found.
  */
-function getIndexes(row: string[], names: string[]): number[] {
-	return names.map((name) => {
-		const index = row.indexOf(name);
+function getIndexes(params: {
+	row: string[];
+	names: string[];
+}): number[] {
+	const { row, names } = params;
+	const rowMap = new Map<string, number>();
 
-		if (index === -1) {
-			console.error(`Name "${name}" not found`);
+	for (const [index, name] of row.entries()) {
+		rowMap.set(name, index);
+	}
+
+	return names.map((name) => {
+		const index = rowMap.get(name);
+
+		if (index === undefined) {
+			return -1;
 		}
 
 		return index;

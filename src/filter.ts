@@ -13,18 +13,19 @@ function filter(params: {
 	const { rows, columnIndex, filterValue, retrieveIndexes } = params;
 
 	if (rows.length === 0) {
-		return [];
+		throw new Error("No rows provided.");
 	}
 
-	if (columnIndex < 0 || columnIndex >= rows[0].length) {
-		console.error(`Invalid column index: ${columnIndex}`);
-		return [];
+	// Assume all rows have the same number of columns as the first row.
+	const rowLength = rows[0].length;
+
+	if (columnIndex < 0 || columnIndex >= rowLength) {
+		throw new Error(`Invalid column index: ${columnIndex}`);
 	}
 
 	for (const index of retrieveIndexes) {
-		if (index < 0 || index >= rows[0].length) {
-			console.error(`Invalid retrieve index: ${index}`);
-			return [];
+		if (index < 0 || index >= rowLength) {
+			throw new Error(`Invalid retrieve index: ${index}`);
 		}
 	}
 

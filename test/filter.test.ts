@@ -21,43 +21,46 @@ describe("filter", () => {
 		]);
 	});
 
-	it("should return empty array if rows are empty", () => {
+	it("should throw error if rows are empty", () => {
 		const rows = [];
-		const result = filter({
-			rows,
-			columnIndex: 1,
-			filterValue: "a",
-			retrieveIndexes: [0, 2],
-		});
-		expect(result).toEqual([]);
+		expect(() =>
+			filter({
+				rows,
+				columnIndex: 1,
+				filterValue: "a",
+				retrieveIndexes: [0, 2],
+			}),
+		).toThrow("No rows provided.");
 	});
 
-	it("should return empty array if columnIndex is out of range", () => {
+	it("should throw error if columnIndex is out of range", () => {
 		const rows = [
 			[1, "a", true],
 			[2, "b", false],
 		];
-		const result = filter({
-			rows,
-			columnIndex: 5,
-			filterValue: "a",
-			retrieveIndexes: [0, 2],
-		});
-		expect(result).toEqual([]);
+		expect(() =>
+			filter({
+				rows,
+				columnIndex: 5,
+				filterValue: "a",
+				retrieveIndexes: [0, 2],
+			}),
+		).toThrow("Invalid column index: 5");
 	});
 
-	it("should return empty array if any retrieveIndex is out of range", () => {
+	it("should throw error if any retrieveIndex is out of range", () => {
 		const rows = [
 			[1, "a", true],
 			[2, "b", false],
 		];
-		const result = filter({
-			rows,
-			columnIndex: 1,
-			filterValue: "a",
-			retrieveIndexes: [0, 5],
-		});
-		expect(result).toEqual([]);
+		expect(() =>
+			filter({
+				rows,
+				columnIndex: 1,
+				filterValue: "a",
+				retrieveIndexes: [0, 5],
+			}),
+		).toThrow("Invalid retrieve index: 5");
 	});
 
 	it("should handle null and undefined values correctly", () => {

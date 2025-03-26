@@ -23,18 +23,19 @@ describe("getUniqueValues", () => {
 		expect(result).toEqual([]);
 	});
 
-	it("should handle columnIndex out of range", () => {
+	it("should throw error if columnIndex is out of range", () => {
 		const rows = [
 			["Header1", "Header2", "Header3"],
 			[1, "a", true],
 			[2, "b", false],
 		];
 		const rowsWithoutHeader = rows.slice(1);
-		const result = getUniqueValues({
-			rows: rowsWithoutHeader,
-			columnIndex: 10,
-		});
-		expect(result).toEqual([]);
+		expect(() =>
+			getUniqueValues({
+				rows: rowsWithoutHeader,
+				columnIndex: 10,
+			}),
+		).toThrow("Invalid column index: 10");
 	});
 
 	it("should exclude null and undefined values", () => {

@@ -16,15 +16,24 @@ type ValidateResult = {
  * Checks each field for required status and maximum length. For array values, it ensures all elements are strings and joins them.
  * Returns an object with valid values and any error messages.
  */
-function validateParameters(
-	inputValues: InputValues,
-	acceptedRows: AcceptedRow[],
-): ValidateResult {
+function validateParameters(params: {
+	inputValues: InputValues;
+	acceptedRows: AcceptedRow[];
+}): ValidateResult {
+	const { inputValues, acceptedRows } = params;
 	const values: string[] = [];
 	const errors: string[] = [];
 
 	for (const { name, maxlength, required } of acceptedRows) {
 		const value = inputValues[name];
+
+		if (value === undefined) {
+			if (required) {
+				errors.push(`"${name}" is required.`);
+			}
+
+			continue;
+		}
 
 		if (typeof value === "string") {
 			if (required && value === "") {

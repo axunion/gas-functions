@@ -14,8 +14,7 @@ function getUniqueValues(params: {
 	}
 
 	if (columnIndex < 0 || columnIndex >= rows[0].length) {
-		console.error(`Invalid column index: ${columnIndex}`);
-		return [];
+		throw new Error(`Invalid column index: ${columnIndex}`);
 	}
 
 	const uniqueValues = new Set<SheetCell>();
