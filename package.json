@@ -9,6 +9,7 @@
 		"lint:write": "biome lint --write ./src",
 		"check": "biome check ./src",
 		"check:write": "biome check --write ./src",
+		"build": "tsc",
 		"test": "vitest"
 	},
 	"author": "",
