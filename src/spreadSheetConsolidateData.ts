@@ -23,7 +23,7 @@ type SheetCell = number | string | boolean | Date | null | undefined;
  * @param {number[]} [params.requiredColumns] - Optional array of column numbers (1-indexed relative to the extracted data)
  *   that must contain a value. If any of these cells are empty, the row is skipped.
  */
-function consolidateDataWithParams(params: {
+function spreadSheetConsolidateData(params: {
 	folderId: string;
 	sortKey?: "name" | "date";
 	sortOrder?: "asc" | "desc";
