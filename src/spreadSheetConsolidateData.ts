@@ -21,7 +21,7 @@ type SheetCell = number | string | boolean | Date | null | undefined;
  * @param {number} [params.source.startColumn=1] - Column to start extraction (1-indexed).
  * @param {number} [params.source.maxRows] - Max number of rows to extract.
  * @param {number} [params.source.maxColumns] - Max number of columns to extract.
- * @param {number[]} [params.source.requiredColumns] - Required (non-empty) columns relative to extracted data.
+ * @param {number[]} [params.source.requiredColumns] - Required (non-empty) columns (1-indexed, relative to extracted data).
  * @param {object} params.destination - Where to write consolidated data.
  * @param {number} [params.destination.startRow=1] - Destination start row (1-indexed).
  * @param {number} [params.destination.startColumn=1] - Destination start column (1-indexed).
@@ -48,8 +48,8 @@ function consolidateData(params: {
 		sheetName,
 		startRow: sourceStartRow = 1,
 		startColumn: sourceStartColumn = 1,
-		maxRows = 1000,
-		maxColumns = 100,
+		maxRows = 500,
+		maxColumns = 50,
 		requiredColumns,
 	} = source;
 	const {
@@ -57,7 +57,6 @@ function consolidateData(params: {
 		startColumn: destinationStartColumn = 1,
 	} = destination;
 
-	// Validate positive row/column values
 	if (
 		sourceStartRow < 1 ||
 		sourceStartColumn < 1 ||
@@ -82,7 +81,6 @@ function consolidateData(params: {
 		throw new Error(`Error retrieving folder with ID "${folderId}": ${e}`);
 	}
 
-	// Get all files in folder
 	const files: GoogleAppsScript.Drive.File[] = [];
 	const fileIterator = folder.getFiles();
 
@@ -101,7 +99,6 @@ function consolidateData(params: {
 		return sortOrder === "asc" ? value : -value;
 	});
 
-	// Process each file
 	for (const file of files) {
 		if (file.getMimeType() !== "application/vnd.google-apps.spreadsheet") {
 			continue;
@@ -112,9 +109,10 @@ function consolidateData(params: {
 			const sourceSheet = ss.getSheetByName(sheetName);
 
 			if (!sourceSheet) {
-				throw new Error(
-					`File "${file.getName()}" does not contain sheet "${sheetName}".`,
+				Logger.log(
+					`Skipping file "${file.getName()}" because sheet "${sheetName}" does not exist.`,
 				);
+				continue;
 			}
 
 			const sourceLastRow = sourceSheet.getLastRow();
@@ -126,38 +124,36 @@ function consolidateData(params: {
 			);
 
 			if (numRows <= 0 || numColumns <= 0) {
-				throw new Error(
-					`File "${file.getName()}" does not have data starting from row ${sourceStartRow} and column ${sourceStartColumn}.`,
+				Logger.log(
+					`Skipping file "${file.getName()}" due to insufficient data at specified start row/column.`,
 				);
+				continue;
 			}
 
-			// Extract data from source sheet
 			const data: SheetCell[][] = sourceSheet
 				.getRange(sourceStartRow, sourceStartColumn, numRows, numColumns)
 				.getValues();
 
-			// Append valid rows with required columns
 			for (const row of data) {
-				if (
-					requiredColumns?.some(
-						(col) =>
-							col < 1 ||
-							col > row.length ||
-							row[col - 1] === "" ||
-							row[col - 1] == null,
-					)
-				) {
-					continue;
-				}
+				const isValid = requiredColumns
+					? requiredColumns.every(
+							(colIndex) =>
+								colIndex >= 1 &&
+								colIndex <= row.length &&
+								row[colIndex - 1] !== "" &&
+								row[colIndex - 1] != null,
+						)
+					: true;
+
+				if (!isValid) continue;
 
 				consolidatedData.push([file.getName(), ...row]);
 			}
 		} catch (error) {
-			throw new Error(`Error processing file "${file.getName()}": ${error}`);
+			Logger.log(`Skipping file "${file.getName()}": ${error}`);
 		}
 	}
 
-	// Write results to destination
 	if (consolidatedData.length > 0) {
 		try {
 			destinationSheet
@@ -175,7 +171,7 @@ function consolidateData(params: {
 		}
 	} else {
 		throw new Error(
-			"No data was consolidated. Please check if the source sheets contain data.",
+			"No data was consolidated. Please check if the source sheets contain valid data.",
 		);
 	}
 }
