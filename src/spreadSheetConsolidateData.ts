@@ -1,30 +1,25 @@
 type SheetCell = number | string | boolean | Date | null | undefined;
 
 /**
- * Consolidates data from all Google Sheets files within a specified folder.
+ * Consolidates data from multiple Google Sheets within a specified folder into the active sheet.
  *
- * Each file's specified sheet is accessed, and a range of data is extracted starting
- * from a given row/column. Valid rows are appended to the active sheet.
- *
- * Output format:
- * - Column A: Source file name.
- * - Columns B onward: Extracted row data.
- *
- * @param {object} params - Consolidation settings.
- * @param {string} params.folderId - The ID of the Drive folder containing spreadsheets.
- * @param {object} [params.sort] - Sorting options for files.
- * @param {"name"|"date"} [params.sort.key="name"] - Sort files by name or last updated date.
- * @param {"asc"|"desc"} [params.sort.order="asc"] - Sort order.
- * @param {object} params.source - Source sheet and range info.
- * @param {string} params.source.sheetName - Sheet name to extract data from.
- * @param {number} [params.source.startRow=1] - Row to start extraction (1-indexed).
- * @param {number} [params.source.startColumn=1] - Column to start extraction (1-indexed).
- * @param {number} [params.source.maxRows] - Max number of rows to extract.
- * @param {number} [params.source.maxColumns] - Max number of columns to extract.
- * @param {number[]} [params.source.requiredColumns] - Required (non-empty) columns (1-indexed, relative to extracted data).
- * @param {object} params.destination - Where to write consolidated data.
- * @param {number} [params.destination.startRow=1] - Destination start row (1-indexed).
- * @param {number} [params.destination.startColumn=1] - Destination start column (1-indexed).
+ * @param params - Parameters for data consolidation.
+ * @param params.folderId - The ID of the Google Drive folder containing the source spreadsheets.
+ * @param params.sort - Optional sorting parameters for the files within the folder.
+ * @param params.sort.key - Key to sort files by: 'name' or 'date'. Defaults to 'name'.
+ * @param params.sort.order - Sort order: 'asc' or 'desc'. Defaults to 'asc'.
+ * @param params.source - Parameters defining the source data to extract from each sheet.
+ * @param params.source.sheetName - The name of the sheet to extract data from in each source file.
+ * @param params.source.startRow - The 1-based row index to start extraction from. Defaults to 1.
+ * @param params.source.startColumn - The 1-based column index to start extraction from. Defaults to 1.
+ * @param params.source.maxRows - The maximum number of rows to extract from each source sheet. Defaults to 500.
+ * @param params.source.maxColumns - The maximum number of columns to extract from each source sheet. Defaults to 50.
+ * @param params.source.requiredColumns - An array of 1-based column indexes (relative to the extracted data) that must not be empty for a row to be considered valid.
+ * @param params.destination - Parameters defining where to write the consolidated data in the active sheet.
+ * @param params.destination.startRow - The 1-based row index in the destination sheet to start writing data. Defaults to 1.
+ * @param params.destination.startColumn - The 1-based column index in the destination sheet to start writing data. Defaults to 1.
+ * @returns Void. Data is written directly to the active spreadsheet.
+ * @throws Error if start row/column values are not positive integers, or if the folderId is invalid, or if there's an error during processing.
  */
 function consolidateData(params: {
 	folderId: string;

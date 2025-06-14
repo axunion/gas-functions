@@ -1,5 +1,12 @@
 /**
- * Saves an image to a specified Google Drive directory.
+ * Saves an image to a specified Google Drive folder.
+ *
+ * @param params - Parameters for saving the image.
+ * @param params.image - The image blob source to save. Must be a valid BlobSource.
+ * @param params.fileName - The desired name for the saved file. Must not be empty.
+ * @param params.folderId - The ID of the Google Drive folder where the image will be saved. Must not be empty.
+ * @returns The Google Apps Script Drive File object representing the saved image.
+ * @throws Error if folderId or fileName is empty, if the folder is not found, or if there is an error during file creation or naming.
  */
 function saveImage(params: {
 	image: GoogleAppsScript.Base.BlobSource;
@@ -8,25 +15,36 @@ function saveImage(params: {
 }): GoogleAppsScript.Drive.File {
 	const { image, fileName, folderId } = params;
 
-	// Attempt to retrieve the folder using the provided directory ID.
+	if (!folderId || typeof folderId !== "string" || folderId.trim() === "") {
+		throw new Error("Folder ID is required and must be a non-empty string.");
+	}
+
+	if (!fileName || typeof fileName !== "string" || fileName.trim() === "") {
+		throw new Error("File name is required and must be a non-empty string.");
+	}
+
+	if (!image) {
+		throw new Error("Image data (BlobSource) is required.");
+	}
+
 	let folder: GoogleAppsScript.Drive.Folder;
 
 	try {
 		folder = DriveApp.getFolderById(folderId);
-	} catch (error) {
-		throw new Error("Directory not found with the provided ID.");
+	} catch (e) {
+		throw new Error(
+			`Folder not found or inaccessible with ID "${folderId}". Original error: ${e.message}`,
+		);
 	}
-
-	// Attempt to create and save the file in the target folder.
-	let file: GoogleAppsScript.Drive.File;
 
 	try {
-		file = folder.createFile(image).setName(fileName);
-	} catch (error) {
-		throw new Error("Error saving the image to the specified directory.");
+		const file = folder.createFile(image);
+		return file.setName(fileName);
+	} catch (e) {
+		throw new Error(
+			`Error saving image "${fileName}" to folder ID "${folderId}". Original error: ${e.message}`,
+		);
 	}
-
-	return file;
 }
 
 export { saveImage };
