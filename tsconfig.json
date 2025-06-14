@@ -5,6 +5,7 @@
 		"module": "None",
 		"outDir": "./dist",
 		"rootDir": "./src",
+		"declaration": true,
 		"noImplicitAny": true,
 		"skipLibCheck": true,
 		"types": ["google-apps-script"]
