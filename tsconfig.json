@@ -2,13 +2,13 @@
 	"compilerOptions": {
 		"target": "es2019",
 		"lib": ["esnext"],
-		"module": "None",
+		"module": "none",
 		"outDir": "./dist",
 		"rootDir": "./src",
 		"declaration": true,
+		"emitDeclarationOnly": true,
 		"noImplicitAny": true,
-		"skipLibCheck": true,
-		"types": ["google-apps-script"]
+		"skipLibCheck": true
 	},
 	"include": ["src/**/*"]
 }
