@@ -19,40 +19,30 @@ type RecaptchaResponse = {
  */
 function verifyRecaptcha(params: {
 	secret: string;
-	recaptcha: string;
+	token: string;
 }): RecaptchaResponse {
-	if (!params || typeof params !== "object") {
-		throw new Error(
-			"Parameters for reCAPTCHA verification must be provided as an object.",
-		);
-	}
-
-	const { secret, recaptcha } = params;
+	const { secret, token } = params;
 
 	if (typeof secret !== "string" || secret.trim() === "") {
-		throw new Error("The 'secret' parameter must be a non-empty string.");
+		throw new Error("secret parameter must be a non-empty string.");
 	}
 
-	if (typeof recaptcha !== "string" || recaptcha.trim() === "") {
+	if (typeof token !== "string" || token.trim() === "") {
 		throw new Error(
-			"The 'recaptcha' parameter (user response token) must be a non-empty string.",
+			"token parameter (user response token) must be a non-empty string.",
 		);
 	}
 
 	const url = "https://www.google.com/recaptcha/api/siteverify";
-
 	let response: GoogleAppsScript.URL_Fetch.HTTPResponse;
 
 	try {
 		response = UrlFetchApp.fetch(url, {
 			method: "post",
-			payload: { secret, response: recaptcha },
-			muteHttpExceptions: true, // To handle non-200 responses manually
+			payload: { secret, response: token },
 		});
 	} catch (e: unknown) {
-		// Catch network errors or other issues with UrlFetchApp.fetch itself
 		const errorMessage = e instanceof Error ? e.message : String(e);
-		console.error(`reCAPTCHA API fetch error: ${errorMessage}`);
 		throw new Error(
 			`Failed to connect to reCAPTCHA API. Please check network connection and API endpoint. Original error: ${errorMessage}`,
 		);
@@ -62,9 +52,6 @@ function verifyRecaptcha(params: {
 	const responseText = response.getContentText();
 
 	if (httpCode !== 200) {
-		console.error(
-			`reCAPTCHA API non-200 response. Code: ${httpCode}, Response: ${responseText}`,
-		);
 		throw new Error(
 			`Failed to verify reCAPTCHA. The API returned HTTP status ${httpCode}. Response: ${responseText}`,
 		);
@@ -76,21 +63,9 @@ function verifyRecaptcha(params: {
 		result = JSON.parse(responseText);
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e);
-		console.error(
-			`reCAPTCHA API JSON parsing error: ${errorMessage}. Response text: ${responseText}`,
-		);
 		throw new Error(
 			`Failed to parse reCAPTCHA API response. Ensure the API is returning valid JSON. Original error: ${errorMessage}`,
 		);
-	}
-
-	// Additional check for error-codes in the response, even if success might be true (or false)
-	if (result["error-codes"] && result["error-codes"].length > 0) {
-		console.warn(
-			`reCAPTCHA verification returned with error codes: ${result["error-codes"].join(", ")}`,
-		);
-		// Depending on policy, you might want to throw an error here or handle it differently.
-		// For now, we return the result as the API still provided a structured response.
 	}
 
 	return result;
