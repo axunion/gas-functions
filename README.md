@@ -4,49 +4,19 @@ A TypeScript utility function library for Google Apps Script.
 
 ## Overview
 
-This library provides commonly used Google Apps Script functionality as type-safe TypeScript functions. It includes utilities for Google Drive operations, spreadsheet processing, external API integration, data processing, and validation - all implemented as reusable functions for efficient GAS development.
+This library provides commonly used Google Apps Script functionality as type-safe TypeScript functions. It includes utilities for Google Drive operations, spreadsheet processing, external API integration, data processing, and validation - all implemented as reusable functions that can be easily copied and integrated into your GAS projects.
 
 Each function features proper type definitions and error handling, enabling safe and efficient use across team projects.
 
 ## Usage
 
-### 1. Library Registration
+### Using Functions in Your Project
 
-1. Deploy this project to Google Apps Script
-2. Publish as a library and obtain the library ID
+Copy the required function files from the `src/` directory to your Google Apps Script project:
 
-### 2. Using in Projects
-
-Follow these steps in your project:
-
-#### Add library to appsscript.json
-
-```json
-{
-  "timeZone": "Asia/Tokyo",
-  "dependencies": {
-    "libraries": [{
-      "userSymbol": "GasFunctions",
-      "libraryId": "YOUR_LIBRARY_ID",
-      "version": "1"
-    }]
-  }
-}
-```
-
-#### Using Type Definitions
-
-For TypeScript + clasp development, copy the type definition files (.d.ts) to your project.
-
-```typescript
-// Usage example
-const result = GasFunctions.filter({
-  rows: [[1, 'a', true], [2, 'b', false]],
-  columnIndex: 1,
-  filterValue: 'a',
-  retrieveIndexes: [0, 2]
-});
-```
+1. Browse the `src/` directory and identify the functions you need
+2. Copy the TypeScript files (.ts) to your project
+3. Import and use the functions directly in your code
 
 ## Development
 
