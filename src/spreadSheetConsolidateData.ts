@@ -170,3 +170,5 @@ function consolidateData(params: {
 		);
 	}
 }
+
+export { consolidateData };

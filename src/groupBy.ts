@@ -77,7 +77,7 @@ function groupBy(params: {
 			const key = String(groupKey); // Convert groupKey to string for object key
 			const values = retrieveIndexes.map((index) => row[index]); // This will map to `undefined` if index is out of bounds for the current `row`
 
-			if (!Object.prototype.hasOwnProperty.call(groupedValues, key)) {
+			if (!Object.hasOwn(groupedValues, key)) {
 				groupedValues[key] = [];
 			}
 			groupedValues[key].push(values);

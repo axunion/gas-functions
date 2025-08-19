@@ -22,9 +22,7 @@ function formatEmailTemplate(
 
 	return template.replace(placeholderRegex, (match, key) => {
 		const trimmedKey = key.trim();
-		return Object.prototype.hasOwnProperty.call(data, trimmedKey)
-			? String(data[trimmedKey])
-			: match;
+		return Object.hasOwn(data, trimmedKey) ? String(data[trimmedKey]) : match;
 	});
 }
 
