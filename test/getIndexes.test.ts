@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { getIndexes } from "../src/getIndexes";
 
 describe("getIndexes", () => {
@@ -23,11 +23,18 @@ describe("getIndexes", () => {
 		expect(result).toEqual([]);
 	});
 
-	it("should return -1 for each name when row array is empty", () => {
+	it("should return empty array when row array is empty", () => {
 		const row: string[] = [];
 		const names = ["Name", "Age"];
 		const result = getIndexes({ row, names });
-		expect(result).toEqual([-1, -1]);
+		expect(result).toEqual([]);
+	});
+
+	it("should return -1 for all names when none are found", () => {
+		const row: string[] = ["ID", "Name", "Age", "Gender"];
+		const names = ["Address", "Phone", "Email"];
+		const result = getIndexes({ row, names });
+		expect(result).toEqual([-1, -1, -1]);
 	});
 
 	it("should handle case where some names are not found", () => {

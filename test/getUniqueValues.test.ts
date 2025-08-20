@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { getUniqueValues } from "../src/getUniqueValues";
 
 describe("getUniqueValues", () => {
@@ -35,7 +35,7 @@ describe("getUniqueValues", () => {
 				rows: rowsWithoutHeader,
 				columnIndex: 10,
 			}),
-		).toThrow("Invalid column index: 10");
+		).toThrow("columnIndex 10 is out of bounds or rows are malformed.");
 	});
 
 	it("should exclude null and undefined values", () => {

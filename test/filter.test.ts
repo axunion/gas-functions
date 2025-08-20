@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { filter } from "../src/filter";
 
 describe("filter", () => {
@@ -21,16 +21,15 @@ describe("filter", () => {
 		]);
 	});
 
-	it("should throw error if rows are empty", () => {
+	it("should return empty array if rows are empty", () => {
 		const rows = [];
-		expect(() =>
-			filter({
-				rows,
-				columnIndex: 1,
-				filterValue: "a",
-				retrieveIndexes: [0, 2],
-			}),
-		).toThrow("No rows provided.");
+		const result = filter({
+			rows,
+			columnIndex: 1,
+			filterValue: "a",
+			retrieveIndexes: [0, 2],
+		});
+		expect(result).toEqual([]);
 	});
 
 	it("should throw error if columnIndex is out of range", () => {
@@ -45,7 +44,7 @@ describe("filter", () => {
 				filterValue: "a",
 				retrieveIndexes: [0, 2],
 			}),
-		).toThrow("Invalid column index: 5");
+		).toThrow("columnIndex 5 is out of bounds for row length 3.");
 	});
 
 	it("should throw error if any retrieveIndex is out of range", () => {
@@ -60,7 +59,7 @@ describe("filter", () => {
 				filterValue: "a",
 				retrieveIndexes: [0, 5],
 			}),
-		).toThrow("Invalid retrieve index: 5");
+		).toThrow("retrieveIndex 5 is out of bounds for row length 3.");
 	});
 
 	it("should handle null and undefined values correctly", () => {

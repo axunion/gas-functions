@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { groupBy } from "../src/groupBy";
 
 describe("groupBy", () => {
@@ -49,7 +49,7 @@ describe("groupBy", () => {
 				columnIndex: 5,
 				retrieveIndexes: [0, 2],
 			}),
-		).toThrow("Invalid column index: 5");
+		).toThrow("columnIndex 5 is out of bounds for row length 3.");
 	});
 
 	it("should throw error if any retrieveIndex is out of range", () => {
@@ -63,7 +63,7 @@ describe("groupBy", () => {
 				columnIndex: 1,
 				retrieveIndexes: [0, 5],
 			}),
-		).toThrow("Invalid retrieve index: 5");
+		).toThrow("retrieveIndex 5 is out of bounds for row length 3.");
 	});
 
 	it("should handle null and undefined values correctly", () => {
