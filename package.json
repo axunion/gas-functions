@@ -3,17 +3,15 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
+		"build": "tsc",
 		"format": "biome format ./src",
 		"format:write": "biome format --write ./src",
 		"lint": "biome lint ./src",
 		"lint:write": "biome lint --write ./src",
 		"check": "biome check ./src",
 		"check:write": "biome check --write ./src",
-		"build": "tsc",
 		"test": "vitest"
 	},
-	"author": "",
-	"license": "MIT",
 	"devDependencies": {
 		"@biomejs/biome": "2.2.0",
 		"@types/google-apps-script": "^1.0.99",
