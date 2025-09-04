@@ -15,19 +15,28 @@ type Config = {
  */
 function _getConfig(): void {
 	const properties = PropertiesService.getScriptProperties().getProperties();
-	const config = getConfig(properties.SPREADSHEET_ID_CONFIG, "");
+	const config = getConfig(properties.SPREADSHEET_ID_CONFIG, "", true);
 	console.log(config);
 }
 
 /**
  * Retrieves configuration data from a specified Google Sheet.
  *
+ * If `configOnly` is true the function will return the raw data from the
+ * `config` sheet (as a 2D array of values) and will not attempt to resolve
+ * the referenced sheet by `type`.
+ *
  * @param fileId - The ID of the Google Spreadsheet.
  * @param type - The type of configuration to retrieve.
- * @returns An object containing the configuration data.
- * @throws Error if the specified sheet is not found.
+ * @param configOnly - When true returns the `config` sheet data directly.
+ * @returns An object containing the configuration data or the raw config sheet values when `configOnly`.
+ * @throws Error if the specified sheet is not found (only when configOnly is false).
  */
-function getConfig(fileId: string, type: string): Config {
+function getConfig(
+	fileId: string,
+	type: string,
+	configOnly = false,
+): Config | unknown[] | undefined {
 	const ss = SpreadsheetApp.openById(fileId);
 	const configSheet = ss.getSheetByName("config");
 
@@ -45,6 +54,10 @@ function getConfig(fileId: string, type: string): Config {
 
 	if (!config) {
 		throw new Error("Config not found.");
+	}
+
+	if (configOnly) {
+		return config;
 	}
 
 	const sheet = ss.getSheetByName(type);
