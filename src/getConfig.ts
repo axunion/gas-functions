@@ -17,27 +17,20 @@ type Config = {
 	}[];
 };
 
-/** The name of the configuration sheet */
+/** Configuration sheet name */
 const CONFIG_SHEET_NAME = "config" as const;
-/** Column index for mark field in config sheet */
-const COL_MARK = 0;
-/** Column index for type field in config sheet */
+/** Config sheet column indexes */
 const COL_TYPE = 1;
-/** Column index for file ID field in config sheet */
 const COL_FILE_ID = 2;
-/** Column index for sheet name field in config sheet */
 const COL_SHEET_NAME = 3;
 
-/** Column index for field name in field configuration sheet */
+/** Field config sheet column indexes */
 const FIELD_COL_NAME = 0;
-/** Column index for max length in field configuration sheet */
 const FIELD_COL_MAXLENGTH = 1;
-/** Column index for required flag in field configuration sheet */
 const FIELD_COL_REQUIRED = 2;
 
 /**
  * Test function for debugging configuration retrieval.
- * Retrieves and logs configuration data for testing purposes.
  */
 function _getConfig(): void {
 	const properties = PropertiesService.getScriptProperties().getProperties();
@@ -49,14 +42,14 @@ function _getConfig(): void {
 }
 
 /**
- * Internal helper function to retrieve a configuration row from a spreadsheet.
- * Searches for a non-marked configuration entry matching the specified type.
+ * Retrieves a configuration row from a spreadsheet.
+ * Searches for a configuration entry matching the specified type.
  *
- * @param spreadsheet - The Google Spreadsheet object to search in.
- * @param type - The configuration type to match.
- * @param fileId - The file ID for error reporting purposes.
- * @returns The configuration row as an array of values.
- * @throws {Error} If the config sheet is not found, empty, or no matching configuration is found.
+ * @param spreadsheet - The Google Spreadsheet object
+ * @param type - The configuration type to match
+ * @param fileId - The file ID for error reporting
+ * @returns The configuration row as an array of values
+ * @throws {Error} If config sheet is not found or no matching configuration exists
  */
 function _getConfigRow(
 	spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet,
@@ -79,9 +72,7 @@ function _getConfigRow(
 		);
 	}
 
-	const configRow = configRows.find(
-		(row) => !row[COL_MARK] && row[COL_TYPE] === type,
-	);
+	const configRow = configRows.find((row) => row[COL_TYPE] === type);
 
 	if (!configRow) {
 		throw new Error(`Config not found: type='${type}', fileId='${fileId}'`);
@@ -91,12 +82,12 @@ function _getConfigRow(
 }
 
 /**
- * Retrieves a configuration row from a spreadsheet by opening it with the given file ID.
+ * Retrieves a configuration row by file ID.
  *
- * @param fileId - The Google Spreadsheet file ID to open.
- * @param type - The configuration type to search for.
- * @returns The configuration row as an array of values.
- * @throws {Error} If the spreadsheet cannot be opened or configuration is not found.
+ * @param fileId - The Google Spreadsheet file ID
+ * @param type - The configuration type to search for
+ * @returns The configuration row as an array of values
+ * @throws {Error} If spreadsheet cannot be opened or configuration not found
  */
 function getConfigRow(fileId: string, type: string): unknown[] {
 	const ss = SpreadsheetApp.openById(fileId);
@@ -104,13 +95,12 @@ function getConfigRow(fileId: string, type: string): unknown[] {
 }
 
 /**
- * Retrieves a complete configuration object including field configurations from a spreadsheet.
- * Combines configuration metadata with field validation rules.
+ * Retrieves a complete configuration object with field validation rules.
  *
- * @param fileId - The Google Spreadsheet file ID containing the configuration.
- * @param type - The configuration type, which also serves as the field sheet name.
- * @returns A Config object containing file ID, sheet name, and field configurations.
- * @throws {Error} If the spreadsheet, config sheet, or field sheet cannot be found or accessed.
+ * @param fileId - The Google Spreadsheet file ID containing configuration
+ * @param type - The configuration type (also used as field sheet name)
+ * @returns Config object with file ID, sheet name, and field configurations
+ * @throws {Error} If spreadsheet, config sheet, or field sheet cannot be accessed
  */
 function getConfig(fileId: string, type: string): Config {
 	const ss = SpreadsheetApp.openById(fileId);
