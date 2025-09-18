@@ -6,10 +6,7 @@ type AcceptedRow = {
 	required: boolean;
 };
 
-type ValidateResult = {
-	values: string[];
-	errors: string[];
-};
+type ValidateResult = string[];
 
 /**
  * Validates input parameters against a set of accepted criteria.
@@ -18,8 +15,8 @@ type ValidateResult = {
  * @param params - The parameters for validation.
  * @param params.inputValues - An object where keys are field names and values are the input strings or array of strings.
  * @param params.acceptedRows - An array of objects defining the validation criteria for each field (name, maxlength, required).
- * @returns An object containing two arrays: `values` (valid, processed string values for fields that passed validation, ordered as per `acceptedRows`) and `errors` (any validation error messages).
- * @throws {Error} If `params`, `params.inputValues`, or `params.acceptedRows` is null or undefined.
+ * @returns An array of valid, processed string values for fields that passed validation, ordered as per `acceptedRows`.
+ * @throws {Error} If `params`, `params.inputValues`, or `params.acceptedRows` is null or undefined, or if any validation error occurs.
  */
 function validateParameters(params: {
 	inputValues: InputValues;
@@ -39,60 +36,51 @@ function validateParameters(params: {
 
 	const { inputValues, acceptedRows } = params;
 	const values: string[] = [];
-	const errors: string[] = [];
 
 	for (const { name, maxlength, required } of acceptedRows) {
 		const value = inputValues[name];
 
 		if (value === undefined || value === null) {
-			// Consider null as well
 			if (required) {
-				errors.push(`"${name}" is required.`);
+				throw new Error(`"${name}" is required.`);
 			}
-			// No value to add, continue to next acceptedRow
 			continue;
 		}
 
 		if (typeof value === "string") {
-			if (required && value === "") {
-				errors.push(`"${name}" is required.`);
-				// Do not add to values if required and empty
-			} else if (value.length > maxlength) {
-				errors.push(`"${name}" is too long. Maximum length is ${maxlength}.`);
-				// Do not add to values if too long
-			} else {
+			if (required && value.trim() === "") {
+				throw new Error(`"${name}" is required.`);
+			}
+			if (value.length > maxlength) {
+				throw new Error(
+					`"${name}" is too long. Maximum length is ${maxlength}.`,
+				);
+			}
+			if (value !== "") {
 				values.push(value);
 			}
 		} else if (Array.isArray(value)) {
 			if (required && value.length === 0) {
-				errors.push(`"${name}" is required.`);
-				// Do not add to values if required and empty
-			} else {
-				// Check for non-string elements before joining
-				if (value.some((v) => typeof v !== "string")) {
-					errors.push(`"${name}" contains non-string elements.`);
-					// Do not add to values if type error
-				} else {
-					const joinedValue = value.join(","); // Default separator
-					if (joinedValue.length > maxlength) {
-						errors.push(
-							`"${name}" is too long. Maximum length is ${maxlength} (after joining array elements).`,
-						);
-						// Do not add to values if too long after join
-					} else {
-						values.push(joinedValue);
-					}
-				}
+				throw new Error(`"${name}" is required.`);
 			}
+			if (value.some((v) => typeof v !== "string")) {
+				throw new Error(`"${name}" contains non-string elements.`);
+			}
+			const joinedValue = value.join(",");
+			if (joinedValue.length > maxlength) {
+				throw new Error(
+					`"${name}" is too long. Maximum length is ${maxlength} (after joining array elements).`,
+				);
+			}
+			values.push(joinedValue);
 		} else {
-			// Handle cases where value is not undefined/null, not string, not array (e.g. number, boolean, object)
-			errors.push(
+			throw new Error(
 				`"${name}" has an invalid type. Expected string or array of strings.`,
 			);
 		}
 	}
 
-	return { values, errors };
+	return values;
 }
 
 export { validateParameters };
