@@ -4,19 +4,15 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsc",
-		"format": "biome format ./src",
-		"format:write": "biome format --write ./src",
-		"lint": "biome lint ./src",
-		"lint:write": "biome lint --write ./src",
 		"check": "biome check ./src",
 		"check:write": "biome check --write ./src",
 		"test": "vitest"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.0",
+		"@biomejs/biome": "2.3.8",
 		"@types/google-apps-script": "^1.0.99",
 		"@types/node": "^24.3.0",
-		"typescript": "^5.9.2",
+		"typescript": "^5.9.3",
 		"vitest": "^2.1.9"
 	}
 }
