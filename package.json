@@ -4,8 +4,8 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsc",
-		"check": "biome check ./src",
-		"check:write": "biome check --write ./src",
+		"check": "biome check ./src ./test",
+		"check:write": "biome check --write ./src ./test",
 		"test": "vitest"
 	},
 	"devDependencies": {
