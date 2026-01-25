@@ -1,37 +1,24 @@
-/**
- * Configuration object structure for managing spreadsheet field validations.
- */
 type Config = {
-	/** The target spreadsheet file ID */
 	fileId: string;
-	/** The target sheet name within the spreadsheet */
 	sheetName: string;
-	/** Array of field configuration objects for validation */
 	fieldConfigs: {
-		/** Field name */
 		name: string;
-		/** Maximum allowed length for the field value */
 		maxlength: number;
-		/** Whether the field is required */
 		required: boolean;
 	}[];
 };
 
-/** Configuration sheet name */
+type ConfigRow = [unknown, string, string, string, ...unknown[]];
+
 const CONFIG_SHEET_NAME = "config" as const;
-/** Config sheet column indexes */
 const COL_TYPE = 1;
 const COL_FILE_ID = 2;
 const COL_SHEET_NAME = 3;
 
-/** Field config sheet column indexes */
 const FIELD_COL_NAME = 0;
 const FIELD_COL_MAXLENGTH = 1;
 const FIELD_COL_REQUIRED = 2;
 
-/**
- * Test function for debugging configuration retrieval.
- */
 function _getConfig(): void {
 	const properties = PropertiesService.getScriptProperties().getProperties();
 	const type = "";
@@ -42,20 +29,15 @@ function _getConfig(): void {
 }
 
 /**
- * Retrieves a configuration row from a spreadsheet.
- * Searches for a configuration entry matching the specified type.
+ * Internal helper: Finds a configuration row within a spreadsheet.
  *
- * @param spreadsheet - The Google Spreadsheet object
- * @param type - The configuration type to match
- * @param fileId - The file ID for error reporting
- * @returns The configuration row as an array of values
  * @throws {Error} If config sheet is not found or no matching configuration exists
  */
-function _getConfigRow(
+function findConfigRow(
 	spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet,
 	type: string,
 	fileId: string,
-): unknown[] {
+): ConfigRow {
 	const configSheet = spreadsheet.getSheetByName(CONFIG_SHEET_NAME);
 
 	if (!configSheet) {
@@ -78,28 +60,22 @@ function _getConfigRow(
 		throw new Error(`Config not found: type='${type}', fileId='${fileId}'`);
 	}
 
-	return configRow;
+	return configRow as ConfigRow;
 }
 
 /**
  * Retrieves a configuration row by file ID.
  *
- * @param fileId - The Google Spreadsheet file ID
- * @param type - The configuration type to search for
- * @returns The configuration row as an array of values
  * @throws {Error} If spreadsheet cannot be opened or configuration not found
  */
-function getConfigRow(fileId: string, type: string): unknown[] {
+function getConfigRow(fileId: string, type: string): ConfigRow {
 	const ss = SpreadsheetApp.openById(fileId);
-	return _getConfigRow(ss, type, fileId);
+	return findConfigRow(ss, type, fileId);
 }
 
 /**
  * Retrieves a complete configuration object with field validation rules.
  *
- * @param fileId - The Google Spreadsheet file ID containing configuration
- * @param type - The configuration type (also used as field sheet name)
- * @returns Config object with file ID, sheet name, and field configurations
  * @throws {Error} If spreadsheet, config sheet, or field sheet cannot be accessed
  */
 function getConfig(fileId: string, type: string): Config {
@@ -112,7 +88,7 @@ function getConfig(fileId: string, type: string): Config {
 		);
 	}
 
-	const configRow = _getConfigRow(ss, type, fileId);
+	const configRow = findConfigRow(ss, type, fileId);
 	const fieldData = fieldSheet.getDataRange().getValues();
 
 	return {
@@ -133,4 +109,4 @@ function getConfig(fileId: string, type: string): Config {
 	};
 }
 
-export { getConfig };
+export { getConfig, getConfigRow };
