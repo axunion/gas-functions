@@ -10,7 +10,6 @@ TypeScript utility functions for Google Apps Script.
 | `duplicateFile` | Duplicate a file |
 | `filter` | Array filtering |
 | `formatEmailTemplate` | Format email templates |
-| `getConfig` | Get configuration values |
 | `getIndexes` | Get indexes from array |
 | `getUniqueValues` | Get unique values |
 | `groupBy` | Group array by key |
