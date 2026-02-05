@@ -21,10 +21,17 @@ This file provides guidance to Claude Code when working with this repository.
 - `type SheetCell = number | string | boolean | Date | null | undefined` is defined locally in multiple files (not centralized)
 - Build emits only `.d.ts` declaration files to `dist/` (`emitDeclarationOnly: true`)
 
+## Documentation
+
+- `README.md` — Library user-facing: function table, usage, dev commands
+- `test/README.md` — Developer-facing: mock architecture, usage patterns, how to write new tests
+- When adding new `src/` files, update the function table in `README.md`
+
 ## Testing
 
-- Vitest with mocks for GAS APIs in `test/mocks/`
+- Vitest with mocks for GAS APIs in `test/mocks/` (details in `test/README.md`)
 - Mock setup functions (`setupDriveApp`, `setupSpreadsheetApp`, `setupUrlFetchApp`) inject mocks into `globalThis`
+- `UrlFetchApp` mock differs: `setupUrlFetchApp()` takes no config, use `mockFetchSuccess`/`mockFetchHttpError`/`mockFetchNetworkError` helpers
 - Tests mirror source: `src/foo.ts` → `test/foo.test.ts`
 
 ## Tooling

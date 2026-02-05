@@ -15,6 +15,7 @@ TypeScript utility functions for Google Apps Script.
 | `groupBy` | Group array by key |
 | `listFiles` | List files in folder |
 | `saveImage` | Save image to Drive |
+| `sendToLine` | Send LINE messages |
 | `sendToSlack` | Send Slack notifications |
 | `spreadSheetConsolidateData` | Consolidate spreadsheet data |
 | `validateParameters` | Validate parameters |
@@ -35,7 +36,7 @@ pnpm test       # Run tests
 
 ## Testing
 
-Tests use [Vitest](https://vitest.dev/) with mock implementations for GAS services (`DriveApp`, `SpreadsheetApp`, `UrlFetchApp`).
+Tests use [Vitest](https://vitest.dev/) with mock implementations for GAS services (`DriveApp`, `SpreadsheetApp`, `UrlFetchApp`). See [test/README.md](test/README.md) for details on the mock architecture and how to write new tests.
 
 ```bash
 pnpm test           # Run all tests
