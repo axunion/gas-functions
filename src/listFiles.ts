@@ -24,11 +24,10 @@ function listFiles(params: {
 
 	try {
 		folder = DriveApp.getFolderById(folderId);
-	} catch (e) {
+	} catch (e: unknown) {
 		// If getFolderById throws (e.g., invalid ID, no access), log and return empty array as per JSDoc.
-		console.warn(
-			`Could not retrieve folder with ID "${folderId}": ${e.message}`,
-		);
+		const message = e instanceof Error ? e.message : String(e);
+		console.warn(`Could not retrieve folder with ID "${folderId}": ${message}`);
 		return [];
 	}
 

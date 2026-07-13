@@ -5,7 +5,7 @@ This file provides guidance to Claude Code when working with this repository.
 ## Commands
 
 - `pnpm install` — install dependencies
-- `pnpm build` — compile TypeScript (generates .d.ts files only)
+- `pnpm typecheck` — type check with tsc (`--noEmit`, no build output)
 - `pnpm check` — lint/format check with Biome
 - `pnpm check:write` — auto-fix lint/format issues
 - `pnpm test` — run all tests with Vitest
@@ -19,7 +19,9 @@ This file provides guidance to Claude Code when working with this repository.
 - No inter-module dependencies; functions are designed to be copied individually into GAS projects
 - Functions depend on GAS globals (`DriveApp`, `SpreadsheetApp`, `UrlFetchApp`, `Logger`, `Utilities`) available at runtime
 - `type SheetCell = number | string | boolean | Date | null | undefined` is defined locally in multiple files (not centralized)
-- Build emits only `.d.ts` declaration files to `dist/` (`emitDeclarationOnly: true`)
+- No build output — `tsc` runs with `noEmit` for type checking only; consumers copy `.ts` source files directly
+- `export` statements exist only for testing; users delete them after copying (GAS has no ES module support)
+- Code must stay strict-safe for destination projects: catch variables are `unknown` (`useUnknownInCatchVariables`), so narrow with `instanceof Error` before accessing `.message`
 
 ## Documentation
 

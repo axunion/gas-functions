@@ -53,8 +53,9 @@ function sendToLine(params: {
 
 	try {
 		response = UrlFetchApp.fetch(API_URL, options);
-	} catch (e) {
-		throw new Error(`Failed to execute LINE API call: ${e.message}`);
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : String(e);
+		throw new Error(`Failed to execute LINE API call: ${message}`);
 	}
 
 	const responseCode = response.getResponseCode();
@@ -70,9 +71,10 @@ function sendToLine(params: {
 
 	try {
 		responseData = JSON.parse(responseBody);
-	} catch (e) {
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : String(e);
 		throw new Error(
-			`Failed to parse LINE API response. Status: ${responseCode}. Body: ${responseBody}. Error: ${e.message}`,
+			`Failed to parse LINE API response. Status: ${responseCode}. Body: ${responseBody}. Error: ${message}`,
 		);
 	}
 

@@ -40,9 +40,10 @@ function duplicateFile(params: {
 
 	try {
 		templateFile = DriveApp.getFileById(fileId);
-	} catch (e) {
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : String(e);
 		throw new Error(
-			`Failed to retrieve source file with ID "${fileId}". Original error: ${e.message}`,
+			`Failed to retrieve source file with ID "${fileId}". Original error: ${message}`,
 		);
 	}
 
@@ -50,17 +51,19 @@ function duplicateFile(params: {
 
 	try {
 		targetFolder = DriveApp.getFolderById(directoryId);
-	} catch (e) {
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : String(e);
 		throw new Error(
-			`Failed to retrieve target folder with ID "${directoryId}". Original error: ${e.message}`,
+			`Failed to retrieve target folder with ID "${directoryId}". Original error: ${message}`,
 		);
 	}
 
 	try {
 		return templateFile.makeCopy(name, targetFolder);
-	} catch (e) {
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : String(e);
 		throw new Error(
-			`Failed to duplicate file "${templateFile.getName()}" (ID: "${fileId}") to folder "${targetFolder.getName()}" (ID: "${directoryId}") with new name "${name}". Original error: ${e.message}`,
+			`Failed to duplicate file "${templateFile.getName()}" (ID: "${fileId}") to folder "${targetFolder.getName()}" (ID: "${directoryId}") with new name "${name}". Original error: ${message}`,
 		);
 	}
 }

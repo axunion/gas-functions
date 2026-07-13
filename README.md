@@ -25,11 +25,15 @@ TypeScript utility functions for Google Apps Script.
 
 Copy the required function files from `src/` to your GAS project.
 
+> **Important:** After copying, delete the trailing `export { ... }` line.
+> The export exists only for testing in this repository — GAS does not support
+> ES modules, so leaving it in causes a `SyntaxError` at runtime.
+
 ## Development
 
 ```bash
 pnpm install    # Setup
-pnpm build      # Build
+pnpm typecheck  # Type check (no build output)
 pnpm check      # Lint & format check
 pnpm test       # Run tests
 ```

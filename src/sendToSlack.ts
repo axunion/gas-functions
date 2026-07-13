@@ -50,9 +50,10 @@ function sendToSlack(params: {
 
 	try {
 		response = UrlFetchApp.fetch(API_URL, options);
-	} catch (e) {
+	} catch (e: unknown) {
 		// Catch network errors or other issues with UrlFetchApp.fetch itself
-		throw new Error(`Failed to execute Slack API call: ${e.message}`);
+		const message = e instanceof Error ? e.message : String(e);
+		throw new Error(`Failed to execute Slack API call: ${message}`);
 	}
 
 	const responseCode = response.getResponseCode();
@@ -68,9 +69,10 @@ function sendToSlack(params: {
 
 	try {
 		responseData = JSON.parse(responseBody);
-	} catch (e) {
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : String(e);
 		throw new Error(
-			`Failed to parse Slack API response. Status: ${responseCode}. Body: ${responseBody}. Error: ${e.message}`,
+			`Failed to parse Slack API response. Status: ${responseCode}. Body: ${responseBody}. Error: ${message}`,
 		);
 	}
 

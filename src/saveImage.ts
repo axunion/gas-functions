@@ -31,18 +31,20 @@ function saveImage(params: {
 
 	try {
 		folder = DriveApp.getFolderById(folderId);
-	} catch (e) {
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : String(e);
 		throw new Error(
-			`Folder not found or inaccessible with ID "${folderId}". Original error: ${e.message}`,
+			`Folder not found or inaccessible with ID "${folderId}". Original error: ${message}`,
 		);
 	}
 
 	try {
 		const file = folder.createFile(image);
 		return file.setName(fileName);
-	} catch (e) {
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : String(e);
 		throw new Error(
-			`Error saving image "${fileName}" to folder ID "${folderId}". Original error: ${e.message}`,
+			`Error saving image "${fileName}" to folder ID "${folderId}". Original error: ${message}`,
 		);
 	}
 }

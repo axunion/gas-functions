@@ -4,10 +4,9 @@
 		"lib": ["esnext"],
 		"module": "esnext",
 		"rootDir": "./src",
-		"outDir": "./dist",
-		"declaration": true,
-		"emitDeclarationOnly": true,
+		"noEmit": true,
 		"noImplicitAny": true,
+		"useUnknownInCatchVariables": true,
 		"skipLibCheck": true,
 		"types": ["google-apps-script"]
 	},
