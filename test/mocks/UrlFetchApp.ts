@@ -54,3 +54,10 @@ export const mockFetchNetworkError = (message = "Network error") => {
 		throw new Error(message);
 	});
 };
+
+/** Set mock to return a 200 response whose body is not valid JSON */
+export const mockFetchInvalidJson = (body = "not json") => {
+	mockUrlFetchApp.fetch.mockReturnValue(
+		createMockResponse({ code: 200, body }),
+	);
+};

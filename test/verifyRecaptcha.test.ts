@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { verifyRecaptcha } from "../src/verifyRecaptcha";
 import {
 	mockFetchHttpError,
+	mockFetchInvalidJson,
 	mockFetchNetworkError,
 	mockFetchSuccess,
 	mockUrlFetchApp,
@@ -17,8 +18,8 @@ const validResponse = {
 };
 
 beforeEach(() => {
-	setupUrlFetchApp();
 	vi.clearAllMocks();
+	setupUrlFetchApp();
 });
 
 describe("verifyRecaptcha", () => {
@@ -57,16 +58,6 @@ describe("verifyRecaptcha", () => {
 					secret: "secret",
 					token: "token",
 					scoreThreshold: 1.1,
-				}),
-			).toThrow("scoreThreshold must be a number between 0.0 and 1.0");
-		});
-
-		it("throws if scoreThreshold is not a number", () => {
-			expect(() =>
-				verifyRecaptcha({
-					secret: "secret",
-					token: "token",
-					scoreThreshold: "0.5" as unknown as number,
 				}),
 			).toThrow("scoreThreshold must be a number between 0.0 and 1.0");
 		});
@@ -120,12 +111,12 @@ describe("verifyRecaptcha", () => {
 	});
 
 	describe("error handling", () => {
-		it("throws on network failure", () => {
+		it("propagates the UrlFetchApp error on network failure", () => {
 			mockFetchNetworkError("Connection timeout");
 
 			expect(() =>
 				verifyRecaptcha({ secret: "secret", token: "token" }),
-			).toThrow("reCAPTCHA API request failed");
+			).toThrow("Connection timeout");
 		});
 
 		it("throws on HTTP error status", () => {
@@ -147,6 +138,14 @@ describe("verifyRecaptcha", () => {
 			).toThrow("reCAPTCHA verification failed (invalid-input-secret)");
 		});
 
+		it("treats a response without success field as failed verification", () => {
+			mockFetchSuccess({ score: 0.9 });
+
+			expect(() =>
+				verifyRecaptcha({ secret: "secret", token: "token" }),
+			).toThrow("reCAPTCHA verification failed");
+		});
+
 		it("throws when score is below threshold", () => {
 			mockFetchSuccess({ ...validResponse, score: 0.3 });
 
@@ -159,14 +158,6 @@ describe("verifyRecaptcha", () => {
 			).toThrow("reCAPTCHA score 0.3 is below threshold 0.5");
 		});
 
-		it("throws on missing success field", () => {
-			mockFetchSuccess({ score: 0.9 });
-
-			expect(() =>
-				verifyRecaptcha({ secret: "secret", token: "token" }),
-			).toThrow("Invalid reCAPTCHA response: missing 'success' field");
-		});
-
 		it("throws on missing score field", () => {
 			mockFetchSuccess({ success: true });
 
@@ -175,20 +166,12 @@ describe("verifyRecaptcha", () => {
 			).toThrow("Invalid reCAPTCHA response: missing or invalid 'score' field");
 		});
 
-		it("throws on invalid JSON response", () => {
-			mockUrlFetchApp.fetch.mockReturnValue({
-				getResponseCode: () => 200,
-				getContentText: () => "not json",
-				getAllHeaders: () => ({}),
-				getAs: vi.fn(),
-				getBlob: vi.fn(),
-				getContent: vi.fn(),
-				getHeaders: () => ({}),
-			});
+		it("propagates the JSON parse error on invalid JSON response", () => {
+			mockFetchInvalidJson();
 
 			expect(() =>
 				verifyRecaptcha({ secret: "secret", token: "token" }),
-			).toThrow("Failed to parse reCAPTCHA response");
+			).toThrow(SyntaxError);
 		});
 	});
 });

@@ -1,33 +1,18 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { detectImageMimeType } from "../src/detectImageMimeType";
+import { setupUtilities } from "./mocks";
 
-// Simple base64 helper without Node typings
 const b64 = (bytes: number[]) =>
-	typeof Buffer !== "undefined"
-		? Buffer.from(Uint8Array.from(bytes)).toString("base64")
-		: // Fallback (not used in Node/Vitest normally)
-			btoa(String.fromCharCode(...bytes));
+	Buffer.from(Uint8Array.from(bytes)).toString("base64");
 
 beforeAll(() => {
-	// Mock GAS Utilities for base64 decoding
-	// Define a minimal Utilities with base64Decode returning a byte array
-	(
-		globalThis as unknown as {
-			Utilities: { base64Decode: (s: string) => number[] };
-		}
-	).Utilities = {
-		base64Decode: (s: string): number[] =>
-			typeof Buffer !== "undefined"
-				? Array.from(Buffer.from(s, "base64"))
-				: Array.from(Uint8Array.from(atob(s), (c) => c.charCodeAt(0))),
-	};
+	setupUtilities();
 });
 
 describe("detectImageMimeType", () => {
 	it("detects JPEG from raw base64 with magic bytes", () => {
 		const jpegSig = [0xff, 0xd8, 0xff, 0x00, 0x01];
-		const base64Data = b64(jpegSig);
-		const res = detectImageMimeType({ base64Data });
+		const res = detectImageMimeType({ base64Data: b64(jpegSig) });
 		expect(res).toEqual({ mimeType: "image/jpeg", extension: "jpg" });
 	});
 
@@ -62,30 +47,27 @@ describe("detectImageMimeType", () => {
 			0x50, // WEBP
 			0x56, // extra padding
 		];
-		const base64Data = b64(webpBytes);
-		const res = detectImageMimeType({ base64Data });
+		const res = detectImageMimeType({ base64Data: b64(webpBytes) });
 		expect(res).toEqual({ mimeType: "image/webp", extension: "webp" });
 	});
 
 	it("returns SVG when data URL explicitly specifies image/svg+xml", () => {
-		const svgPayload =
-			typeof Buffer !== "undefined"
-				? Buffer.from("<svg/>").toString("base64")
-				: btoa("<svg/>");
-		const svgDataUrl = `data:image/svg+xml;base64,${svgPayload}`;
+		const svgDataUrl = `data:image/svg+xml;base64,${Buffer.from("<svg/>").toString("base64")}`;
 		const res = detectImageMimeType({ base64Data: svgDataUrl });
 		expect(res).toEqual({ mimeType: "image/svg+xml", extension: "svg" });
 	});
 
 	it("throws for too short base64 data", () => {
 		const tooShort = b64([0x00, 0x01]);
-		expect(() => detectImageMimeType({ base64Data: tooShort })).toThrow();
+		expect(() => detectImageMimeType({ base64Data: tooShort })).toThrow(
+			"Base64 data is too short to determine image type.",
+		);
 	});
 
-	it("throws for unsupported or unknown image format", () => {
+	it("throws the unsupported-format error without wrapping it", () => {
 		const unknown = b64([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 		expect(() => detectImageMimeType({ base64Data: unknown })).toThrow(
-			"Unsupported or unknown image format.",
+			/^Unsupported or unknown image format\.$/,
 		);
 	});
 

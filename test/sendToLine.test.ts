@@ -9,8 +9,8 @@ import {
 } from "./mocks";
 
 beforeEach(() => {
-	setupUrlFetchApp();
 	vi.clearAllMocks();
+	setupUrlFetchApp();
 });
 
 describe("sendToLine", () => {
@@ -53,16 +53,6 @@ describe("sendToLine", () => {
 					text: "hello",
 				}),
 			).toThrow("LINE target ID is required");
-		});
-
-		it("throws if text is not a string", () => {
-			expect(() =>
-				sendToLine({
-					channelAccessToken: "token123",
-					targetId: "group123",
-					text: 123 as unknown as string,
-				}),
-			).toThrow("LINE message text must be a string");
 		});
 
 		it("allows empty text string", () => {
@@ -132,7 +122,7 @@ describe("sendToLine", () => {
 			).toThrow("LINE API request failed. Status: 400");
 		});
 
-		it("throws on network failure", () => {
+		it("propagates the UrlFetchApp error on network failure", () => {
 			mockFetchNetworkError("Connection refused");
 
 			expect(() =>
@@ -141,39 +131,7 @@ describe("sendToLine", () => {
 					targetId: "group123",
 					text: "msg",
 				}),
-			).toThrow("Failed to execute LINE API call");
-		});
-
-		it("throws on invalid JSON response", () => {
-			mockUrlFetchApp.fetch.mockReturnValue({
-				getResponseCode: () => 200,
-				getContentText: () => "not json",
-				getAllHeaders: () => ({}),
-				getAs: vi.fn(),
-				getBlob: vi.fn(),
-				getContent: vi.fn(),
-				getHeaders: () => ({}),
-			});
-
-			expect(() =>
-				sendToLine({
-					channelAccessToken: "token",
-					targetId: "group123",
-					text: "msg",
-				}),
-			).toThrow("Failed to parse LINE API response");
-		});
-
-		it("throws on LINE API error in response body", () => {
-			mockFetchSuccess({ message: "Invalid reply token" });
-
-			expect(() =>
-				sendToLine({
-					channelAccessToken: "token",
-					targetId: "group123",
-					text: "msg",
-				}),
-			).toThrow("LINE API returned an error");
+			).toThrow("Connection refused");
 		});
 	});
 });

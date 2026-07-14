@@ -6,7 +6,7 @@
  * @param params.directoryId - The ID of the Google Drive folder where the duplicate will be created. Must not be empty.
  * @param params.name - The name for the new duplicated file. Must not be empty.
  * @returns The Google Apps Script Drive File object representing the duplicated file.
- * @throws Error if `fileId`, `directoryId`, or `name` is empty, if the original file or target folder is not found or inaccessible, or if there is an error during the duplication process (e.g., naming conflict, insufficient permissions).
+ * @throws Error if a parameter is empty, or if DriveApp fails (file/folder not found, insufficient permissions, etc.).
  */
 function duplicateFile(params: {
 	fileId: string;
@@ -15,57 +15,28 @@ function duplicateFile(params: {
 }): GoogleAppsScript.Drive.File {
 	const { fileId, directoryId, name } = params;
 
-	if (!fileId || typeof fileId !== "string" || fileId.trim() === "") {
+	if (!fileId.trim()) {
 		throw new Error(
 			"Source file ID is required and must be a non-empty string.",
 		);
 	}
 
-	if (
-		!directoryId ||
-		typeof directoryId !== "string" ||
-		directoryId.trim() === ""
-	) {
+	if (!directoryId.trim()) {
 		throw new Error(
 			"Target directory ID is required and must be a non-empty string.",
 		);
 	}
-	if (!name || typeof name !== "string" || name.trim() === "") {
+
+	if (!name.trim()) {
 		throw new Error(
 			"New file name is required and must be a non-empty string.",
 		);
 	}
 
-	let templateFile: GoogleAppsScript.Drive.File;
+	const file = DriveApp.getFileById(fileId);
+	const folder = DriveApp.getFolderById(directoryId);
 
-	try {
-		templateFile = DriveApp.getFileById(fileId);
-	} catch (e: unknown) {
-		const message = e instanceof Error ? e.message : String(e);
-		throw new Error(
-			`Failed to retrieve source file with ID "${fileId}". Original error: ${message}`,
-		);
-	}
-
-	let targetFolder: GoogleAppsScript.Drive.Folder;
-
-	try {
-		targetFolder = DriveApp.getFolderById(directoryId);
-	} catch (e: unknown) {
-		const message = e instanceof Error ? e.message : String(e);
-		throw new Error(
-			`Failed to retrieve target folder with ID "${directoryId}". Original error: ${message}`,
-		);
-	}
-
-	try {
-		return templateFile.makeCopy(name, targetFolder);
-	} catch (e: unknown) {
-		const message = e instanceof Error ? e.message : String(e);
-		throw new Error(
-			`Failed to duplicate file "${templateFile.getName()}" (ID: "${fileId}") to folder "${targetFolder.getName()}" (ID: "${directoryId}") with new name "${name}". Original error: ${message}`,
-		);
-	}
+	return file.makeCopy(name, folder);
 }
 
 export { duplicateFile };

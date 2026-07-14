@@ -2,45 +2,31 @@ import { describe, expect, it } from "vitest";
 import { getIndexes } from "../src/getIndexes";
 
 describe("getIndexes", () => {
-	it("should return indexes for specified names", () => {
-		const row: string[] = ["ID", "Name", "Age", "Gender"];
+	it("returns indexes for specified names", () => {
+		const row = ["ID", "Name", "Age", "Gender"];
 		const names = ["Name", "Age"];
-		const result = getIndexes({ row, names });
-		expect(result).toEqual([1, 2]);
+		expect(getIndexes({ row, names })).toEqual([1, 2]);
 	});
 
-	it("should return -1 for names that are not found", () => {
-		const row: string[] = ["ID", "Name", "Age", "Gender"];
+	it("returns -1 for names that are not found", () => {
+		const row = ["ID", "Name", "Age", "Gender"];
 		const names = ["Name", "Address"];
-		const result = getIndexes({ row, names });
-		expect(result).toEqual([1, -1]);
+		expect(getIndexes({ row, names })).toEqual([1, -1]);
 	});
 
-	it("should return empty array if names is empty", () => {
-		const row: string[] = ["ID", "Name", "Age", "Gender"];
-		const names: string[] = [];
-		const result = getIndexes({ row, names });
-		expect(result).toEqual([]);
+	it("returns empty array if names is empty", () => {
+		const row = ["ID", "Name", "Age", "Gender"];
+		expect(getIndexes({ row, names: [] })).toEqual([]);
 	});
 
-	it("should return empty array when row array is empty", () => {
-		const row: string[] = [];
+	it("returns empty array when row is empty", () => {
 		const names = ["Name", "Age"];
-		const result = getIndexes({ row, names });
-		expect(result).toEqual([]);
+		expect(getIndexes({ row: [], names })).toEqual([]);
 	});
 
-	it("should return -1 for all names when none are found", () => {
-		const row: string[] = ["ID", "Name", "Age", "Gender"];
+	it("returns -1 for all names when none are found", () => {
+		const row = ["ID", "Name", "Age", "Gender"];
 		const names = ["Address", "Phone", "Email"];
-		const result = getIndexes({ row, names });
-		expect(result).toEqual([-1, -1, -1]);
-	});
-
-	it("should handle case where some names are not found", () => {
-		const row: string[] = ["ID", "Name", "Age", "Gender"];
-		const names = ["Name", "Unknown"];
-		const result = getIndexes({ row, names });
-		expect(result).toEqual([1, -1]);
+		expect(getIndexes({ row, names })).toEqual([-1, -1, -1]);
 	});
 });

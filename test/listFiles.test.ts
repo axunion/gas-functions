@@ -8,8 +8,6 @@ const date3 = new Date("2024-01-03T10:00:00Z");
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	// Suppress console.warn in tests
-	vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
 describe("listFiles", () => {
@@ -164,13 +162,12 @@ describe("listFiles", () => {
 	});
 
 	describe("error handling", () => {
-		it("returns empty array if folder is not found", () => {
+		it("propagates the DriveApp error if folder is not found", () => {
 			setupDriveApp({ folders: {} });
 
-			const result = listFiles({ folderId: "non-existent-folder" });
-
-			expect(result).toEqual([]);
-			expect(console.warn).toHaveBeenCalled();
+			expect(() => listFiles({ folderId: "non-existent-folder" })).toThrow(
+				"Folder not found: non-existent-folder",
+			);
 		});
 	});
 });

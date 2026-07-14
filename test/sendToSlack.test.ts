@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { sendToSlack } from "../src/sendToSlack";
 import {
 	mockFetchHttpError,
+	mockFetchInvalidJson,
 	mockFetchNetworkError,
 	mockFetchSuccess,
 	mockUrlFetchApp,
@@ -9,8 +10,8 @@ import {
 } from "./mocks";
 
 beforeEach(() => {
-	setupUrlFetchApp();
 	vi.clearAllMocks();
+	setupUrlFetchApp();
 });
 
 describe("sendToSlack", () => {
@@ -31,16 +32,6 @@ describe("sendToSlack", () => {
 			expect(() =>
 				sendToSlack({ token: "xoxb-token", channel: "", text: "hello" }),
 			).toThrow("Slack channel is required");
-		});
-
-		it("throws if text is not a string", () => {
-			expect(() =>
-				sendToSlack({
-					token: "xoxb-token",
-					channel: "#general",
-					text: 123 as unknown as string,
-				}),
-			).toThrow("Slack message text must be a string");
 		});
 
 		it("allows empty text string", () => {
@@ -110,28 +101,20 @@ describe("sendToSlack", () => {
 			).toThrow("channel_not_found");
 		});
 
-		it("throws on network failure", () => {
+		it("propagates the UrlFetchApp error on network failure", () => {
 			mockFetchNetworkError("Connection refused");
 
 			expect(() =>
 				sendToSlack({ token: "token", channel: "#test", text: "msg" }),
-			).toThrow("Failed to execute Slack API call");
+			).toThrow("Connection refused");
 		});
 
-		it("throws on invalid JSON response", () => {
-			mockUrlFetchApp.fetch.mockReturnValue({
-				getResponseCode: () => 200,
-				getContentText: () => "not json",
-				getAllHeaders: () => ({}),
-				getAs: vi.fn(),
-				getBlob: vi.fn(),
-				getContent: vi.fn(),
-				getHeaders: () => ({}),
-			});
+		it("propagates the JSON parse error on invalid JSON response", () => {
+			mockFetchInvalidJson();
 
 			expect(() =>
 				sendToSlack({ token: "token", channel: "#test", text: "msg" }),
-			).toThrow("Failed to parse Slack API response");
+			).toThrow(SyntaxError);
 		});
 	});
 });

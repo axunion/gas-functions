@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { groupBy } from "../src/groupBy";
 
 describe("groupBy", () => {
-	it("should group rows by specified column and retrieve specified columns", () => {
+	it("groups rows by specified column and retrieves specified columns", () => {
 		const rows = [
 			[1, "A", 10],
 			[2, "B", 20],
@@ -28,17 +28,25 @@ describe("groupBy", () => {
 		});
 	});
 
-	it("should return an empty object if rows are empty", () => {
-		const rows = [];
+	it("returns an empty object if rows are empty", () => {
 		const result = groupBy({
-			rows,
+			rows: [],
 			columnIndex: 1,
 			retrieveIndexes: [0, 2],
 		});
 		expect(result).toEqual({});
 	});
 
-	it("should throw error if columnIndex is out of range", () => {
+	it("returns an empty object if retrieveIndexes is empty", () => {
+		const rows = [
+			[1, "A", 10],
+			[2, "B", 20],
+		];
+		const result = groupBy({ rows, columnIndex: 1, retrieveIndexes: [] });
+		expect(result).toEqual({});
+	});
+
+	it("throws if columnIndex is out of range", () => {
 		const rows = [
 			[1, "A", 10],
 			[2, "B", 20],
@@ -52,7 +60,7 @@ describe("groupBy", () => {
 		).toThrow("columnIndex 5 is out of bounds for row length 3.");
 	});
 
-	it("should throw error if any retrieveIndex is out of range", () => {
+	it("throws if any retrieveIndex is out of range", () => {
 		const rows = [
 			[1, "A", 10],
 			[2, "B", 20],
@@ -66,7 +74,7 @@ describe("groupBy", () => {
 		).toThrow("retrieveIndex 5 is out of bounds for row length 3.");
 	});
 
-	it("should handle null and undefined values correctly", () => {
+	it("ignores rows whose group key is null or undefined", () => {
 		const rows = [
 			[1, "A", null],
 			[2, undefined, 20],
@@ -83,5 +91,15 @@ describe("groupBy", () => {
 				[3, 30],
 			],
 		});
+	});
+
+	it("handles group keys that collide with Object.prototype properties", () => {
+		const rows = [
+			["__proto__", 1],
+			["constructor", 2],
+		];
+		const result = groupBy({ rows, columnIndex: 0, retrieveIndexes: [1] });
+		expect(result.__proto__).toEqual([[1]]);
+		expect(result.constructor).toEqual([[2]]);
 	});
 });

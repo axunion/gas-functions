@@ -1,39 +1,22 @@
 /**
  * Gets the 0-based indexes of specified names within a header row.
- * If `row` or `names` is null/undefined or empty, an empty array is returned.
  *
  * @param params - The parameters for getting indexes.
- * @param params.row - The header row array of strings. Expected to be an array of unique strings for predictable results, though not strictly enforced.
+ * @param params.row - The header row array of strings. Expected to contain unique values for predictable results.
  * @param params.names - An array of names (strings) to find indexes for.
  * @returns An array of 0-based indexes corresponding to the input `names`. Returns -1 for names not found in `row`.
- *          Returns an empty array if `row` or `names` is null, undefined, or empty.
+ *          Returns an empty array if `row` or `names` is empty.
  */
-function getIndexes(params: {
-	row: string[] | null | undefined;
-	names: string[] | null | undefined;
-}): number[] {
+function getIndexes(params: { row: string[]; names: string[] }): number[] {
 	const { row, names } = params;
 
-	if (!row || row.length === 0 || !names || names.length === 0) {
+	if (row.length === 0 || names.length === 0) {
 		return [];
 	}
 
-	const rowMap = new Map<string, number>();
+	const rowMap = new Map(row.map((name, index) => [name, index]));
 
-	for (const [index, name] of row.entries()) {
-		if (typeof name === "string") {
-			// Ensure name is a string before setting it in Map
-			rowMap.set(name, index);
-		}
-	}
-
-	return names.map((name) => {
-		if (typeof name === "string") {
-			const index = rowMap.get(name);
-			return index === undefined ? -1 : index;
-		}
-		return -1; // If a name in `names` array is not a string, treat as not found.
-	});
+	return names.map((name) => rowMap.get(name) ?? -1);
 }
 
 export { getIndexes };

@@ -3,6 +3,7 @@ import { duplicateFile } from "../src/duplicateFile";
 import { mockDriveApp, setupDriveApp } from "./mocks";
 
 beforeEach(() => {
+	vi.clearAllMocks();
 	setupDriveApp({
 		files: {
 			"source-file-id": { id: "source-file-id", name: "template.docx" },
@@ -11,7 +12,6 @@ beforeEach(() => {
 			"target-folder-id": { id: "target-folder-id", name: "Target Folder" },
 		},
 	});
-	vi.clearAllMocks();
 });
 
 describe("duplicateFile", () => {
@@ -74,12 +74,10 @@ describe("duplicateFile", () => {
 			expect(() =>
 				duplicateFile({
 					fileId: "source-file-id",
-					directoryId: "   ",
+					directoryId: "target-folder-id",
 					name: "   ",
 				}),
-			).toThrow(
-				"Target directory ID is required and must be a non-empty string.",
-			);
+			).toThrow("New file name is required and must be a non-empty string.");
 		});
 	});
 
@@ -101,45 +99,37 @@ describe("duplicateFile", () => {
 	});
 
 	describe("error handling", () => {
-		it("throws if source file is not found", () => {
+		it("propagates the DriveApp error if source file is not found", () => {
 			expect(() =>
 				duplicateFile({
 					fileId: "non-existent-file",
 					directoryId: "target-folder-id",
 					name: "copy.docx",
 				}),
-			).toThrow('Failed to retrieve source file with ID "non-existent-file"');
+			).toThrow("File not found: non-existent-file");
 		});
 
-		it("throws if target folder is not found", () => {
+		it("propagates the DriveApp error if target folder is not found", () => {
 			expect(() =>
 				duplicateFile({
 					fileId: "source-file-id",
 					directoryId: "non-existent-folder",
 					name: "copy.docx",
 				}),
-			).toThrow(
-				'Failed to retrieve target folder with ID "non-existent-folder"',
-			);
+			).toThrow("Folder not found: non-existent-folder");
 		});
 
-		it("throws if makeCopy fails", () => {
-			// Override getFileById to return a file with failing makeCopy
-			mockDriveApp.getFileById.mockImplementation((id: string) => {
-				if (id === "source-file-id") {
-					return {
+		it("propagates the DriveApp error if makeCopy fails", () => {
+			mockDriveApp.getFileById.mockImplementation(
+				() =>
+					({
 						getId: () => "source-file-id",
 						getName: () => "template.docx",
-						getMimeType: () => "application/octet-stream",
-						getLastUpdated: () => new Date(),
 						makeCopy: vi.fn(() => {
 							throw new Error("Insufficient permissions");
 						}),
-						setName: vi.fn(),
-					} as unknown as GoogleAppsScript.Drive.File;
-				}
-				throw new Error(`File not found: ${id}`);
-			});
+					}) as unknown as GoogleAppsScript.Drive.File,
+			);
 
 			expect(() =>
 				duplicateFile({
@@ -147,7 +137,7 @@ describe("duplicateFile", () => {
 					directoryId: "target-folder-id",
 					name: "copy.docx",
 				}),
-			).toThrow('Failed to duplicate file "template.docx"');
+			).toThrow("Insufficient permissions");
 		});
 	});
 });

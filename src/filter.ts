@@ -7,7 +7,7 @@ type SheetCell = number | string | boolean | Date | null | undefined;
  * @param params.rows - The 2D array of sheet cells to filter. If empty, an empty array is returned.
  * @param params.columnIndex - The 0-based index of the column to filter by.
  * @param params.filterValue - The value to match in the filter column.
- * @param params.retrieveIndexes - An array of 0-based column indexes to retrieve from the filtered rows.
+ * @param params.retrieveIndexes - An array of 0-based column indexes to retrieve from the filtered rows. If empty, matched rows are returned as empty arrays.
  * @returns A 2D array of sheet cells containing the filtered and retrieved data. Returns an empty array if input `rows` is empty.
  * @throws Error if `columnIndex` or any `retrieveIndex` is out of bounds for the provided `rows` (when `rows` is not empty).
  */
@@ -19,7 +19,7 @@ function filter(params: {
 }): SheetCell[][] {
 	const { rows, columnIndex, filterValue, retrieveIndexes } = params;
 
-	if (!rows || rows.length === 0) {
+	if (rows.length === 0) {
 		return [];
 	}
 

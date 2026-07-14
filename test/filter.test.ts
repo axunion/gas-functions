@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { filter } from "../src/filter";
 
 describe("filter", () => {
-	it("should filter rows and retrieve specified columns", () => {
+	it("filters rows and retrieves specified columns", () => {
 		const rows = [
 			[1, "a", true],
 			[2, "b", false],
@@ -21,10 +21,9 @@ describe("filter", () => {
 		]);
 	});
 
-	it("should return empty array if rows are empty", () => {
-		const rows = [];
+	it("returns empty array if rows are empty", () => {
 		const result = filter({
-			rows,
+			rows: [],
 			columnIndex: 1,
 			filterValue: "a",
 			retrieveIndexes: [0, 2],
@@ -32,7 +31,22 @@ describe("filter", () => {
 		expect(result).toEqual([]);
 	});
 
-	it("should throw error if columnIndex is out of range", () => {
+	it("returns empty rows when retrieveIndexes is empty", () => {
+		const rows = [
+			[1, "a", true],
+			[2, "b", false],
+			[3, "a", true],
+		];
+		const result = filter({
+			rows,
+			columnIndex: 1,
+			filterValue: "a",
+			retrieveIndexes: [],
+		});
+		expect(result).toEqual([[], []]);
+	});
+
+	it("throws if columnIndex is out of range", () => {
 		const rows = [
 			[1, "a", true],
 			[2, "b", false],
@@ -47,7 +61,7 @@ describe("filter", () => {
 		).toThrow("columnIndex 5 is out of bounds for row length 3.");
 	});
 
-	it("should throw error if any retrieveIndex is out of range", () => {
+	it("throws if any retrieveIndex is out of range", () => {
 		const rows = [
 			[1, "a", true],
 			[2, "b", false],
@@ -62,7 +76,7 @@ describe("filter", () => {
 		).toThrow("retrieveIndex 5 is out of bounds for row length 3.");
 	});
 
-	it("should handle null and undefined values correctly", () => {
+	it("handles null and undefined values correctly", () => {
 		const rows = [
 			[1, "a", null],
 			[2, undefined, false],

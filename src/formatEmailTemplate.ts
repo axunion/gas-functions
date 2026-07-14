@@ -1,26 +1,20 @@
 /**
  * Formats an email template by replacing placeholders with data values.
  * Placeholders should be in the format {{key}} (e.g., {{name}}, {{orderNumber}}).
+ * Placeholders without a matching key are left unchanged.
  *
- * @param template - The email template string with placeholders. If null or undefined, an empty string is returned.
- * @param data - An object where keys correspond to placeholder names (without curly braces and trimmed) and values are the replacement strings or numbers.
- * @returns The formatted email template string. If the template is null/undefined, returns an empty string. If data is null/undefined, returns the original template.
+ * @param params - Parameters for formatting.
+ * @param params.template - The email template string with placeholders.
+ * @param params.data - An object where keys correspond to placeholder names (without curly braces and trimmed) and values are the replacement strings or numbers.
+ * @returns The formatted email template string.
  */
-function formatEmailTemplate(
-	template: string | null | undefined,
-	data: { [key: string]: string | number } | null | undefined,
-): string {
-	if (template === null || template === undefined) {
-		return "";
-	}
+function formatEmailTemplate(params: {
+	template: string;
+	data: { [key: string]: string | number };
+}): string {
+	const { template, data } = params;
 
-	if (data === null || data === undefined) {
-		return template;
-	}
-
-	const placeholderRegex = /\{\{(.+?)\}\}/g;
-
-	return template.replace(placeholderRegex, (match, key) => {
+	return template.replace(/\{\{(.+?)\}\}/g, (match, key: string) => {
 		const trimmedKey = key.trim();
 		return Object.hasOwn(data, trimmedKey) ? String(data[trimmedKey]) : match;
 	});

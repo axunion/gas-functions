@@ -17,7 +17,7 @@ TypeScript utility functions for Google Apps Script.
 | `saveImage` | Save image to Drive |
 | `sendToLine` | Send LINE messages |
 | `sendToSlack` | Send Slack notifications |
-| `spreadSheetConsolidateData` | Consolidate spreadsheet data |
+| `consolidateData` | Consolidate spreadsheet data |
 | `validateParameters` | Validate parameters |
 | `verifyRecaptcha` | Verify reCAPTCHA |
 

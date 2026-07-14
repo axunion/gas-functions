@@ -18,8 +18,8 @@ type SheetCell = number | string | boolean | Date | null | undefined;
  * @param params.destination - Parameters defining where to write the consolidated data in the active sheet.
  * @param params.destination.startRow - The 1-based row index in the destination sheet to start writing data. Defaults to 1.
  * @param params.destination.startColumn - The 1-based column index in the destination sheet to start writing data. Defaults to 1.
- * @returns Void. Data is written directly to the active spreadsheet.
- * @throws Error if start row/column values are not positive integers, or if the folderId is invalid, or if there's an error during processing.
+ * @returns Void. Data is written directly to the active spreadsheet. If no data is consolidated, logs a message and returns without writing.
+ * @throws Error if start row/column values are not positive, or if DriveApp/SpreadsheetApp fails (folder not found, write error, etc.).
  */
 function consolidateData(params: {
 	folderId: string;
@@ -58,24 +58,14 @@ function consolidateData(params: {
 		destinationStartRow < 1 ||
 		destinationStartColumn < 1
 	) {
-		throw new Error(
-			"Error: Start row and column values must be positive integers.",
-		);
+		throw new Error("Start row and column values must be positive integers.");
 	}
 
-	const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-	const destinationSheet = activeSpreadsheet.getActiveSheet();
+	const destinationSheet =
+		SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 	const consolidatedData: SheetCell[][] = [];
 
-	// Retrieve target folder
-	let folder: GoogleAppsScript.Drive.Folder;
-
-	try {
-		folder = DriveApp.getFolderById(folderId);
-	} catch (e) {
-		throw new Error(`Error retrieving folder with ID "${folderId}": ${e}`);
-	}
-
+	const folder = DriveApp.getFolderById(folderId);
 	const files: GoogleAppsScript.Drive.File[] = [];
 	const fileIterator = folder.getFiles();
 
@@ -85,12 +75,10 @@ function consolidateData(params: {
 
 	// Sort files by name or last updated date
 	files.sort((a, b) => {
-		let value = 0;
-		if (sortKey === "name") {
-			value = a.getName().localeCompare(b.getName());
-		} else if (sortKey === "date") {
-			value = a.getLastUpdated().getTime() - b.getLastUpdated().getTime();
-		}
+		const value =
+			sortKey === "name"
+				? a.getName().localeCompare(b.getName())
+				: a.getLastUpdated().getTime() - b.getLastUpdated().getTime();
 		return sortOrder === "asc" ? value : -value;
 	});
 
@@ -100,26 +88,26 @@ function consolidateData(params: {
 		}
 
 		try {
-			const ss = SpreadsheetApp.open(file);
-			const sourceSheet = ss.getSheetByName(sheetName);
+			const sourceSheet = SpreadsheetApp.open(file).getSheetByName(sheetName);
 
 			if (!sourceSheet) {
-				Logger.log(
+				console.log(
 					`Skipping file "${file.getName()}" because sheet "${sheetName}" does not exist.`,
 				);
 				continue;
 			}
 
-			const sourceLastRow = sourceSheet.getLastRow();
-			const sourceLastColumn = sourceSheet.getLastColumn();
-			const numRows = Math.min(maxRows, sourceLastRow - sourceStartRow + 1);
+			const numRows = Math.min(
+				maxRows,
+				sourceSheet.getLastRow() - sourceStartRow + 1,
+			);
 			const numColumns = Math.min(
 				maxColumns,
-				sourceLastColumn - sourceStartColumn + 1,
+				sourceSheet.getLastColumn() - sourceStartColumn + 1,
 			);
 
 			if (numRows <= 0 || numColumns <= 0) {
-				Logger.log(
+				console.log(
 					`Skipping file "${file.getName()}" due to insufficient data at specified start row/column.`,
 				);
 				continue;
@@ -145,30 +133,26 @@ function consolidateData(params: {
 				consolidatedData.push([file.getName(), ...row]);
 			}
 		} catch (error) {
-			Logger.log(`Skipping file "${file.getName()}": ${error}`);
+			// Keep processing the remaining files even if one fails to open
+			console.log(`Skipping file "${file.getName()}": ${String(error)}`);
 		}
 	}
 
-	if (consolidatedData.length > 0) {
-		try {
-			destinationSheet
-				.getRange(
-					destinationStartRow,
-					destinationStartColumn,
-					consolidatedData.length,
-					consolidatedData[0].length,
-				)
-				.setValues(consolidatedData);
-		} catch (e) {
-			throw new Error(
-				`Error writing consolidated data to the destination sheet: ${e}`,
-			);
-		}
-	} else {
-		throw new Error(
+	if (consolidatedData.length === 0) {
+		console.log(
 			"No data was consolidated. Please check if the source sheets contain valid data.",
 		);
+		return;
 	}
+
+	destinationSheet
+		.getRange(
+			destinationStartRow,
+			destinationStartColumn,
+			consolidatedData.length,
+			consolidatedData[0].length,
+		)
+		.setValues(consolidatedData);
 }
 
 export { consolidateData };
