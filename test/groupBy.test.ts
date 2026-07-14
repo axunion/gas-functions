@@ -99,7 +99,9 @@ describe("groupBy", () => {
 			["constructor", 2],
 		];
 		const result = groupBy({ rows, columnIndex: 0, retrieveIndexes: [1] });
-		expect(result.__proto__).toEqual([[1]]);
+		expect(Object.getOwnPropertyDescriptor(result, "__proto__")?.value).toEqual(
+			[[1]],
+		);
 		expect(result.constructor).toEqual([[2]]);
 	});
 });
