@@ -1,40 +1,40 @@
-# sendToSlack Setup Guide
+# sendToSlack セットアップガイド
 
-Prerequisites for sending messages to Slack using the `chat.postMessage` API.
+Slack の `chat.postMessage` API を使用してメッセージを送信するための事前準備手順です。
 
-## 1. Create a Slack App
+## 1. Slack アプリの作成
 
-1. Go to [Slack API: Your Apps](https://api.slack.com/apps) and click **Create New App**
-2. Choose **From scratch**, give it a name, and select your workspace
-3. Navigate to **OAuth & Permissions** in the sidebar
+1. [Slack API: Your Apps](https://api.slack.com/apps) を開き、**Create New App** をクリック
+2. **From scratch** を選択し、アプリ名を入力して対象のワークスペースを選択
+3. サイドバーの **OAuth & Permissions** を開く
 
-## 2. Configure Bot Token Scopes
+## 2. Bot Token Scopes の設定
 
-Under **OAuth & Permissions** > **Scopes** > **Bot Token Scopes**, add:
+**OAuth & Permissions** > **Scopes** > **Bot Token Scopes** で以下を追加:
 
-- `chat:write` — required to post messages
+- `chat:write` — メッセージ投稿に必須
 
-## 3. Install the App to Your Workspace
+## 3. ワークスペースへのアプリのインストール
 
-1. At the top of **OAuth & Permissions**, click **Install to Workspace** and authorize
-2. Copy the **Bot User OAuth Token** (`xoxb-...`) — this is the `token` parameter
+1. **OAuth & Permissions** 上部の **Install to Workspace** をクリックして承認
+2. **Bot User OAuth Token**（`xoxb-...`）をコピー — これが `token` パラメータになる
 
-## 4. Get the Channel ID
+## 4. チャンネル ID の取得
 
-1. Open Slack and right-click the target channel
-2. Select **View channel details**
-3. At the bottom of the details panel, copy the **Channel ID** (e.g., `C1234567890`)
+1. Slack で対象チャンネルを右クリック
+2. **チャンネル詳細を表示** を選択
+3. 詳細パネル最下部の **チャンネル ID**（例: `C1234567890`）をコピー
 
-Note: Invite the bot to the channel first (`/invite @your-bot-name`), or the API will return `channel_not_found`.
+注意: 先にボットをチャンネルに招待しておくこと（`/invite @ボット名`）。招待していないと API が `channel_not_found` を返す。
 
-## 5. Usage in GAS
+## 5. GAS での使用例
 
 ```javascript
 function notifySlack() {
   sendToSlack({
     token: "xoxb-YOUR-BOT-TOKEN",
     channel: "C1234567890",
-    text: "Task completed.",
+    text: "タスクが完了しました",
   });
 }
 ```

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GAS 通知関数セットアップガイド — sendToLine / sendToSlack</title>
+<style>
+  :root {
+    --paper: #fbfcfa;
+    --surface: #f2f4f0;
+    --ink: #23281f;
+    --ink-soft: #5c6357;
+    --rule: #dde1d9;
+    --line-green: #06c755;
+    --line-green-ink: #04833a;
+    --slack-purple: #611f69;
+    --slack-purple-ink: #611f69;
+    --caution-bg: #fdf6e3;
+    --caution-border: #e4c465;
+    --caution-ink: #7a5d0e;
+    --ok: #04833a;
+    --code-bg: #eef1ec;
+    --accent-soft-line: #e2f6ea;
+    --accent-soft-slack: #f3e9f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #171a15;
+      --surface: #20241d;
+      --ink: #e7eae3;
+      --ink-soft: #a4ab9d;
+      --rule: #343a30;
+      --line-green: #2bd575;
+      --line-green-ink: #4fe08c;
+      --slack-purple: #c98fd4;
+      --slack-purple-ink: #d5a5de;
+      --caution-bg: #2c2617;
+      --caution-border: #8a6d1e;
+      --caution-ink: #e3c56a;
+      --ok: #4fe08c;
+      --code-bg: #232821;
+      --accent-soft-line: #1c3527;
+      --accent-soft-slack: #33253a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium", "Yu Gothic", "Noto Sans JP", sans-serif;
+    line-height: 1.85;
+    font-size: 16px;
+  }
+  main {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 5rem;
+  }
+  h1, h2, h3 { line-height: 1.4; text-wrap: balance; font-weight: 700; }
+  h1 { font-size: 1.7rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.3rem; margin: 0; }
+  h3 { font-size: 1.05rem; margin: 2.2rem 0 0.6rem; }
+  p { margin: 0.7rem 0; }
+
+  .meta {
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+  }
+  .lede { color: var(--ink-soft); margin-top: 0; }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.6rem;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+  }
+  .eyebrow.line { background: var(--accent-soft-line); color: var(--line-green-ink); }
+  .eyebrow.slack { background: var(--accent-soft-slack); color: var(--slack-purple-ink); }
+
+  section.guide {
+    margin-top: 3.5rem;
+    padding-top: 2.5rem;
+    border-top: 3px solid var(--rule);
+  }
+  section.guide.line { border-top-color: var(--line-green); }
+  section.guide.slack { border-top-color: var(--slack-purple); }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .table-wrap { overflow-x: auto; margin: 1rem 0; }
+  th, td {
+    border: 1px solid var(--rule);
+    padding: 0.55rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--surface); font-weight: 700; white-space: nowrap; }
+  td.num { font-variant-numeric: tabular-nums; }
+  .verdict-ok { color: var(--ok); font-weight: 700; white-space: nowrap; }
+  .verdict-fix { color: var(--caution-ink); font-weight: 700; white-space: nowrap; }
+
+  ol.steps { padding-left: 1.4rem; margin: 0.8rem 0; }
+  ol.steps li { margin: 0.45rem 0; }
+  ul { padding-left: 1.4rem; margin: 0.8rem 0; }
+  ul li { margin: 0.35rem 0; }
+
+  code {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: var(--code-bg);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+  }
+  pre.code {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+  pre.code code { background: none; padding: 0; font-size: 0.82rem; line-height: 1.7; }
+
+  .caution {
+    background: var(--caution-bg);
+    border-left: 4px solid var(--caution-border);
+    color: var(--caution-ink);
+    border-radius: 0 8px 8px 0;
+    padding: 0.7rem 1rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .caution strong { color: inherit; }
+
+  /* CSS 製フロー図 */
+  figure.flow {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem 1.2rem 1.3rem;
+    margin: 1rem 0;
+  }
+  figure.flow figcaption {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+  }
+  .flow-steps {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    max-width: 30rem;
+    margin: 0 auto;
+  }
+  .flow-step {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-left-width: 4px;
+    border-radius: 6px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .flow-step small { display: block; color: var(--ink-soft); font-size: 0.78rem; }
+  section.line .flow-step { border-left-color: var(--line-green); }
+  section.slack .flow-step { border-left-color: var(--slack-purple); }
+  .flow-arrow {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    user-select: none;
+  }
+  .flow-branch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+  }
+  @media (max-width: 480px) {
+    .flow-branch { grid-template-columns: 1fr; }
+  }
+
+  a { color: var(--line-green-ink); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  section.slack a { color: var(--slack-purple-ink); }
+
+  footer.sources {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+  footer.sources h2 { font-size: 0.95rem; margin-bottom: 0.5rem; }
+  footer.sources ul { margin: 0.4rem 0; }
+
+  :focus-visible { outline: 2px solid var(--line-green); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="meta">gas-functions / docs — 2026年7月16日 検証・更新</p>
+    <h1>GAS 通知関数セットアップガイド</h1>
+    <p class="lede"><code>sendToLine</code> と <code>sendToSlack</code> を使うための外部サービス側の事前準備手順。各サービスの公式ドキュメントに対して内容を検証済みです。</p>
+  </header>
+
+  <h3>検証結果サマリー</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>項目</th><th>旧記述</th><th>検証結果</th><th>判定</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>LINE: チャネル作成手順</td>
+          <td>Developers Console で Messaging API チャネルを直接作成</td>
+          <td>2024年9月4日に廃止。LINE 公式アカウント作成 → Messaging API 有効化の流れに変更。2025年6月25日からは新規作成時にビジネスマネージャー接続が必須</td>
+          <td class="verdict-fix">要修正 → 修正済</td>
+        </tr>
+        <tr>
+          <td>LINE: グループ参加許可の設定場所</td>
+          <td>チャネルの「Messaging API」タブ</td>
+          <td>LINE Official Account Manager の「設定 → アカウント設定 → 機能の利用」で設定する</td>
+          <td class="verdict-fix">要修正 → 修正済</td>
+        </tr>
+        <tr>
+          <td>LINE: チャネルアクセストークン（長期）</td>
+          <td>「Messaging API」タブで発行</td>
+          <td>現在も同じ</td>
+          <td class="verdict-ok">正確</td>
+        </tr>
+        <tr>
+          <td>LINE: 無料枠 月200通</td>
+          <td>月200通・人数分カウント</td>
+          <td>コミュニケーションプラン（月額0円）で月200通。グループ送信は「送信リクエスト数 × 人数」でカウント（公式 FAQ で確認）</td>
+          <td class="verdict-ok">正確</td>
+        </tr>
+        <tr>
+          <td>Slack: アプリ作成〜トークン取得手順</td>
+          <td>Create New App → From scratch → chat:write → Install to Workspace</td>
+          <td>現在も同じ手順。ただし原文が英語だったため日本語化</td>
+          <td class="verdict-ok">正確（日本語化）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ sendToLine ============ -->
+  <section class="guide line">
+    <span class="eyebrow line">LINE Messaging API</span>
+    <h2>sendToLine セットアップガイド</h2>
+    <p>LINE Messaging API のプッシュメッセージでグループ等にテキストを送信するための準備手順です。</p>
+
+    <h3>1. LINE 公式アカウントと Messaging API チャネルの準備</h3>
+    <p>2024年9月4日以降、LINE Developers Console から Messaging API チャネルを直接作成することはできません。先に LINE 公式アカウントを作成し、そこから Messaging API を有効化します。</p>
+
+    <figure class="flow">
+      <figcaption>セットアップの全体フロー</figcaption>
+      <div class="flow-steps">
+        <div class="flow-step">LINE 公式アカウントを作成<small>LINE Official Account Manager ／ ビジネスマネージャー接続が必須</small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Messaging API を有効化<small>設定 → Messaging API ／ プロバイダー選択は後から変更不可</small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-branch">
+          <div class="flow-step">チャネルアクセストークン（長期）を発行<small>LINE Developers Console の「Messaging API」タブ</small></div>
+          <div class="flow-step">グループ・複数人トークへの参加を許可<small>Official Account Manager：設定 → アカウント設定 → 機能の利用</small></div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Webhook でグループ ID を取得</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">GAS から <code>sendToLine</code> で送信</div>
+      </div>
+    </figure>
+
+    <ol class="steps">
+      <li><a href="https://manager.line.biz/">LINE Official Account Manager</a> で LINE 公式アカウントを作成（2025年6月25日以降、新規作成にはビジネスマネージャーとの接続が必須）</li>
+      <li>LINE Official Account Manager の「設定」→「Messaging API」から Messaging API を有効化</li>
+      <li><a href="https://developers.line.biz/console/">LINE Developers Console</a> にログインし、作成された Messaging API チャネルを開く</li>
+      <li>チャネルの「Messaging API」タブで <strong>チャネルアクセストークン（長期）</strong> を発行</li>
+      <li>LINE Official Account Manager の「設定」→「アカウント設定」→「機能の利用」で「<strong>グループ・複数人トークへの参加を許可する</strong>」を有効化</li>
+    </ol>
+
+    <div class="caution"><strong>注意:</strong> Messaging API 有効化時のプロバイダー選択は、後から変更も連携解除もできません。また、グループ参加を許可していない状態でボットをグループに招待すると自動退出します。</div>
+
+    <h3>2. グループ ID の取得方法（Webhook 経由）</h3>
+    <ol class="steps">
+      <li>LINE Developers Console でチャネルの「Messaging API」タブを開く</li>
+      <li>Webhook URL を設定する（例: GAS の Web アプリ URL）</li>
+      <li>Webhook の利用をオンにする</li>
+      <li>LINE 公式アカウント（ボット）を対象のグループに招待する</li>
+      <li>招待時に届くイベントの <code>source.groupId</code> から ID を取得・保存する</li>
+    </ol>
+
+    <p>GAS 側で Webhook を受け取る例:</p>
+    <pre class="code"><code>function doPost(e) {
+  const events = JSON.parse(e.postData.contents).events;
+  for (const event of events) {
+    if (event.source.type === "group") {
+      Logger.log("Group ID: " + event.source.groupId);
+    }
+  }
+  return ContentService.createTextOutput("OK");
+}</code></pre>
+
+    <h3>3. 料金プランとメッセージ通数</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>プラン</th><th>月額（税別）</th><th>無料メッセージ数 / 月</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>コミュニケーションプラン</td><td class="num">0円</td><td class="num">200通</td></tr>
+          <tr><td>ライトプラン</td><td class="num">5,000円</td><td class="num">5,000通</td></tr>
+          <tr><td>スタンダードプラン</td><td class="num">15,000円</td><td class="num">30,000通（追加 3円/通〜）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>通数は「<strong>送信リクエスト数 × 送信対象の人数</strong>」でカウントされます。1 リクエスト内の吹き出し（メッセージオブジェクト）数は関係ありません。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>送信例</th><th>カウント</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>10人のグループに 1回送信</td><td class="num">10通</td></tr>
+          <tr><td>5人のグループに吹き出し3つを 1リクエストで送信</td><td class="num">5通</td></tr>
+          <tr><td>40人のグループに 15回送信</td><td class="num">600通（無料枠超過）</td></tr>
+          <tr><td>応答メッセージ（reply）</td><td class="num">0通（無料）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>ブロック中のユーザーなど、実際に届かない相手はカウントされません。</p>
+
+    <h3>4. GAS での使用例</h3>
+    <pre class="code"><code>function notifyLine() {
+  sendToLine({
+    channelAccessToken: "YOUR_CHANNEL_ACCESS_TOKEN",
+    targetId: "YOUR_GROUP_ID",
+    text: "タスクが完了しました",
+  });
+}</code></pre>
+  </section>
+
+  <!-- ============ sendToSlack ============ -->
+  <section class="guide slack">
+    <span class="eyebrow slack">Slack API</span>
+    <h2>sendToSlack セットアップガイド</h2>
+    <p>Slack の <code>chat.postMessage</code> API でチャンネルにメッセージを送信するための準備手順です。</p>
+
+    <figure class="flow">
+      <figcaption>セットアップの全体フロー</figcaption>
+      <div class="flow-steps">
+        <div class="flow-step">Slack アプリを作成<small>Create New App → From scratch</small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Bot Token Scope を追加<small><code>chat:write</code></small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">ワークスペースにインストール<small>Install to Workspace</small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Bot User OAuth Token を取得<small><code>xoxb-...</code></small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">ボットをチャンネルに招待<small><code>/invite @ボット名</code></small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">チャンネル ID を取得<small>チャンネル詳細の最下部</small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">GAS から <code>sendToSlack</code> で送信</div>
+      </div>
+    </figure>
+
+    <h3>1. Slack アプリの作成</h3>
+    <ol class="steps">
+      <li><a href="https://api.slack.com/apps">Slack API: Your Apps</a> を開き、<strong>Create New App</strong> をクリック</li>
+      <li><strong>From scratch</strong> を選択し、アプリ名を入力して対象のワークスペースを選択</li>
+      <li>サイドバーの <strong>OAuth &amp; Permissions</strong> を開く</li>
+    </ol>
+
+    <h3>2. Bot Token Scopes の設定</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>スコープ</th><th>用途</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>chat:write</code></td><td>メッセージ投稿に必須。送信だけなら他のスコープは不要</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>OAuth &amp; Permissions</strong> → <strong>Scopes</strong> → <strong>Bot Token Scopes</strong> で追加します。</p>
+
+    <h3>3. ワークスペースへのインストールとトークン取得</h3>
+    <ol class="steps">
+      <li><strong>OAuth &amp; Permissions</strong> 上部の <strong>Install to Workspace</strong> をクリックして承認</li>
+      <li><strong>Bot User OAuth Token</strong>（<code>xoxb-...</code>）をコピー — これが <code>token</code> パラメータになる</li>
+    </ol>
+
+    <h3>4. チャンネル ID の取得</h3>
+    <ol class="steps">
+      <li>Slack で対象チャンネルを右クリック</li>
+      <li><strong>チャンネル詳細を表示</strong> を選択</li>
+      <li>詳細パネル最下部の <strong>チャンネル ID</strong>（例: <code>C1234567890</code>）をコピー</li>
+    </ol>
+    <div class="caution"><strong>注意:</strong> 先にボットをチャンネルに招待しておくこと（<code>/invite @ボット名</code>）。招待していないと API が <code>channel_not_found</code> を返します。</div>
+
+    <h3>5. GAS での使用例</h3>
+    <pre class="code"><code>function notifySlack() {
+  sendToSlack({
+    token: "xoxb-YOUR-BOT-TOKEN",
+    channel: "C1234567890",
+    text: "タスクが完了しました",
+  });
+}</code></pre>
+  </section>
+
+  <footer class="sources">
+    <h2>検証に使用した情報源</h2>
+    <ul>
+      <li><a href="https://developers.line.biz/ja/docs/messaging-api/getting-started/">Messaging API を始めよう — LINE Developers</a></li>
+      <li><a href="https://developers.line.biz/ja/news/2025/06/25/connecting-with-business-manager">LINE 公式アカウントの新規作成時にビジネスマネージャーとの接続が必須になりました — LINE Developers</a></li>
+      <li><a href="https://developers.line.biz/ja/faq/">FAQ（メッセージ通数のカウント）— LINE Developers</a></li>
+      <li><a href="https://www.lycbiz.com/jp/service/line-official-account/plan/">LINE 公式アカウント 料金プラン — LINEヤフー for Business</a></li>
+      <li><a href="https://api.slack.com/apps">Slack API: Your Apps</a> ／ <a href="https://docs.slack.dev/authentication/installing-with-oauth/">Installing with OAuth — Slack Developer Docs</a></li>
+    </ul>
+  </footer>
+</main>
+</body>
+</html>
