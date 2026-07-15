@@ -5,9 +5,8 @@ This file provides guidance to Claude Code when working with this repository.
 ## Commands
 
 - `pnpm install` — install dependencies
-- `pnpm typecheck` — type check with tsc (`--noEmit`, no build output)
-- `pnpm check` — lint/format check with Biome
-- `pnpm check:write` — auto-fix lint/format issues
+- `pnpm check` — lint/format check with Biome + type check with tsc (`--noEmit`)
+- `pnpm fix` — auto-fix lint/format issues
 - `pnpm test` — run all tests with Vitest
 - `pnpm test --watch` — watch mode
 - Single test: `pnpm test <filename>` (e.g., `pnpm test filter`)
@@ -28,7 +27,8 @@ This file provides guidance to Claude Code when working with this repository.
 
 - `README.md` — Library user-facing: function table, usage, dev commands
 - `test/README.md` — Developer-facing: mock architecture, usage patterns, how to write new tests
-- When adding new `src/` files, update the function table in `README.md`
+- `docs/<name>.setup.md` — External service setup guides (currently LINE, Slack), linked from the README function table
+- When adding new `src/` files, update the function table in `README.md`; add a `docs/<name>.setup.md` guide if the function requires external service configuration
 
 ## Testing
 
@@ -43,4 +43,4 @@ This file provides guidance to Claude Code when working with this repository.
 
 - Package manager: pnpm
 - Linter/formatter: Biome (not ESLint/Prettier)
-- TypeScript targets ESNext with `noImplicitAny`
+- TypeScript targets ESNext with `noImplicitAny` and `useUnknownInCatchVariables` (catch variables are `unknown`)
